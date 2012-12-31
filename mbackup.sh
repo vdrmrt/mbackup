@@ -12,23 +12,26 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # process arguments
-while getopts "di" flag 
+while getopts "diw" flag 
 do
   if [ "$flag" == "d" ]; then
-    READ=1
+    DUMMY_RUN=1
   fi
   if [ "$flag" == "i" ]; then
     SHOW_INCREMENTS=1
   fi
+  if [ "$flag" == "w" ]; then
+    WAIT_FOR_START=1
+  fi
 done
 
 # do we have to wait
-if [ "$READ" == "1" ]; then
+if [ "$WAIT_FOR_START" == "1" ]; then
   read -p "Press any key to start the backup." key;
 fi
 
 # use escape character \ to include spaces in paths
-BACKUPLIST="/etc/to_backup_v4.txt"
+BACKUPLIST="mbackup-list"
 # test filename and file exists
 if [ ! -f "$BACKUPLIST" ];
 then
@@ -37,7 +40,7 @@ then
 fi
 
 BACKUPFOLDER="/data/Backups/automated/iota"
-LOG="/var/log/backup"
+LOG="/var/log/mbackup"
 
 MAXAGE="3M"
 EXCLUDE_OPTIONS="--exclude-device-files"
@@ -65,7 +68,9 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
       exit 1
     fi
   else
-    mkdir -p $DESTINATION
+    if [ "$DUMMY_RUN" != "1" ]; then
+      mkdir -p $DESTINATION
+    fi
     echo "Created $DESTINATION"
   fi
 
@@ -73,19 +78,25 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
     rdiff-backup)
       echo -n "$TYPE backup of $SOURCE: "
       echo "Backing up $SOURCE" >> $LOG
-      $BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION >> $LOG
+      if [ "$DUMMY_RUN" != "1" ]; then
+	$BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION >> $LOG
+      fi
 
       # How did it go?
       if [ $? -eq 0 ]; then
         echo "Successfull"
         echo -n "Removing backups older than $MAXAGE: "
         echo "Removing backups older than $MAXAGE" >> $LOG
-        $BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> $LOG
+        if [ "$DUMMY_RUN" != "1" ]; then
+	  $BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> $LOG
+	fi
         if [ $? -eq 0 ]; then
             echo "Successfull"
             if [ "$SHOW_INCREMENTS" == "1" ]; then
               echo "List of increments for $SOURCE: "
-              $BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
+              if [ "$DUMMY_RUN" != "1" ]; then
+		$BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
+	      fi
             fi
         else
             echo -n "Removing backups older than $MAXAGE failed, command: "
@@ -99,7 +110,9 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
     rsync)
       echo -n "$TYPE backup of $SOURCE: "
       echo "Backing up $SOURCE" >> $LOG
-      $BINARY_RSYNC -vH $SOURCE $DESTINATION >> $LOG
+      if [ "$DUMMY_RUN" != "1" ]; then
+	$BINARY_RSYNC -vH $SOURCE $DESTINATION >> $LOG
+      fi
 
       # How did it go?
       if [ $? -eq 0 ]; then
@@ -118,6 +131,6 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
 done
 
 # do we have to wait before closing
-if [ "$READ" == "1" ]; then
+if [ "$WAIT_FOR_START" == "1" ]; then
   read -p "Backup completed." key;
 fi
