@@ -1,8 +1,36 @@
-#!/bin/sh
-read -p "Press any key to start the backup." key;
+#!/bin/bash
+
+# change working directory to the script directory take into account links
+SOURCE="${BASH_SOURCE[0]}"
+DIR="$( dirname "$SOURCE" )"
+while [ -h "$SOURCE" ]
+do 
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+echo "$DIR" >> backup_log.txt
+
+# process arguments
+while getopts "di" flag 
+do
+  if [ "$flag" == "d" ]; then
+    READ=1
+  fi
+  if [ "$flag" == "i" ]; then
+    SHOW_INCREMENTS=1
+  fi
+done
+
+# do we have to wait
+if [ "$READ" == "1" ]; then
+  read -p "Press any key to start the backup." key;
+fi
 
 # use escape character \ to include spaces in paths
-BACKUPLIST="/home/vdrmrt/Scripts/backup/to_backup_v3.txt"
+BACKUPLIST="/home/vdrmrt/Scripts/backup/to_backup_v4.txt"
 # test filename and file exists
 if [ ! -f "$BACKUPLIST" ];
 then
@@ -10,7 +38,7 @@ then
   exit 1
 fi
 
-BACKUPFOLDER="/media/data1/Backups"
+BACKUPFOLDER="/media/iota_data/Backups/automated/gamma"
 
 MAXAGE="3M"
 EXCLUDE_OPTIONS="--exclude-device-files"
@@ -25,6 +53,8 @@ for i in $EXCLUDES; do
 	EXCLUDE_OPTIONS="$EXCLUDE_OPTIONS --exclude $i"
 done
 OPTIONS="$EXCLUDE_OPTIONS $OTHER_OPTIONS"
+
+echo "Starting backup"
 
 cat $BACKUPLIST|while read SOURCE TYPE; do
   DESTINATION="$BACKUPFOLDER$SOURCE"    
@@ -51,11 +81,13 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
         echo "Successfull"
         echo -n "Removing backups older than $MAXAGE: "
         echo "Removing backups older than $MAXAGE" >> backup_log.txt
-        #$BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> backup_log.txt
+        $BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> backup_log.txt
         if [ $? -eq 0 ]; then
             echo "Successfull"
-            echo "List of increments for $SOURCE: "
-            $BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
+            if [ "$SHOW_INCREMENTS" == "1" ]; then
+	      echo "List of increments for $SOURCE: "
+	      $BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
+	    fi
         else
             echo -n "Removing backups older than $MAXAGE failed, command: "
             echo "$BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION"
@@ -85,4 +117,7 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
   esac                     
 done
 
-read -p "Backup completed." key;
+# do we have to wait before closing
+if [ "$READ" == "1" ]; then
+  read -p "Backup completed." key;
+fi
