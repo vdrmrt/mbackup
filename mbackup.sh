@@ -11,8 +11,6 @@ do
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-echo "$DIR" >> backup_log.txt
-
 # process arguments
 while getopts "di" flag 
 do
@@ -30,7 +28,7 @@ if [ "$READ" == "1" ]; then
 fi
 
 # use escape character \ to include spaces in paths
-BACKUPLIST="/home/vdrmrt/Scripts/backup/to_backup_v4.txt"
+BACKUPLIST="/etc/to_backup_v4.txt"
 # test filename and file exists
 if [ ! -f "$BACKUPLIST" ];
 then
@@ -38,7 +36,8 @@ then
   exit 1
 fi
 
-BACKUPFOLDER="/media/iota_data/Backups/automated/gamma"
+BACKUPFOLDER="/data/Backups/automated/iota"
+LOG="/var/log/backup"
 
 MAXAGE="3M"
 EXCLUDE_OPTIONS="--exclude-device-files"
@@ -50,7 +49,7 @@ EXCLUDES=""
 # Build a bunch of --exclude ... statements and construct
 # a number of arguments to send to rdiff-backup.
 for i in $EXCLUDES; do
-	EXCLUDE_OPTIONS="$EXCLUDE_OPTIONS --exclude $i"
+        EXCLUDE_OPTIONS="$EXCLUDE_OPTIONS --exclude $i"
 done
 OPTIONS="$EXCLUDE_OPTIONS $OTHER_OPTIONS"
 
@@ -73,21 +72,21 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
   case $TYPE in
     rdiff-backup)
       echo -n "$TYPE backup of $SOURCE: "
-      echo "Backing up $SOURCE" >> backup_log.txt
-      $BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION >> backup_log.txt
+      echo "Backing up $SOURCE" >> $LOG
+      $BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION >> $LOG
 
       # How did it go?
       if [ $? -eq 0 ]; then
         echo "Successfull"
         echo -n "Removing backups older than $MAXAGE: "
-        echo "Removing backups older than $MAXAGE" >> backup_log.txt
-        $BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> backup_log.txt
+        echo "Removing backups older than $MAXAGE" >> $LOG
+        $BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> $LOG
         if [ $? -eq 0 ]; then
             echo "Successfull"
             if [ "$SHOW_INCREMENTS" == "1" ]; then
-	      echo "List of increments for $SOURCE: "
-	      $BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
-	    fi
+              echo "List of increments for $SOURCE: "
+              $BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
+            fi
         else
             echo -n "Removing backups older than $MAXAGE failed, command: "
             echo "$BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION"
@@ -99,8 +98,8 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
       ;;
     rsync)
       echo -n "$TYPE backup of $SOURCE: "
-      echo "Backing up $SOURCE" >> backup_log.txt
-      $BINARY_RSYNC -vH $SOURCE $DESTINATION >> backup_log.txt
+      echo "Backing up $SOURCE" >> $LOG
+      $BINARY_RSYNC -vH $SOURCE $DESTINATION >> $LOG
 
       # How did it go?
       if [ $? -eq 0 ]; then
@@ -114,7 +113,8 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
       echo "Backup type not recognized, skipping."
       exit
       ;;
-  esac                     
+  esac
+  echo ""                    
 done
 
 # do we have to wait before closing
