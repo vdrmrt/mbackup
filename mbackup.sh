@@ -1,7 +1,8 @@
 #!/bin/sh
 read -p "Press any key to start the backup." key;
 
-BACKUPLIST="/home/vdrmrt/scripts/backup/to_backup.txt"
+# use escape character \ to include spaces in paths
+BACKUPLIST="/home/vdrmrt/Scripts/backup/to_backup_v3.txt"
 # test filename and file exists
 if [ ! -f "$BACKUPLIST" ];
 then
@@ -9,11 +10,12 @@ then
   exit 1
 fi
 
-BACKUPFOLDER="/media/data1/backup2"
+BACKUPFOLDER="/media/data1/Backups"
 
 MAXAGE="3M"
 EXCLUDE_OPTIONS="--exclude-device-files"
-BINARY="/usr/bin/rdiff-backup"
+BINARY_RDIFF_BACKUP="/usr/bin/rdiff-backup"
+BINARY_RSYNC="/usr/bin/rsync"
 OTHER_OPTIONS="--print-statistics --exclude-device-files --exclude-special-files --exclude-sockets"
 EXCLUDES=""
 
@@ -24,49 +26,63 @@ for i in $EXCLUDES; do
 done
 OPTIONS="$EXCLUDE_OPTIONS $OTHER_OPTIONS"
 
-cat $BACKUPLIST|while read SOURCE; do	
-	DESTINATION="$BACKUPFOLDER$SOURCE"
-	
-	# Make sure there is a valid place to put the data
-	if [ -e "$DESTINATION" ]; then
-		if [ ! -d "$DESTINATION" ]; then
-			echo "'$DESTINATION' exists, but is not a directory, stopping."
-			exit 1
-		fi
-	else
-		mkdir -p $DESTINATION
-		echo "Created $DESTINATION"
-	fi
-	
-	# Backup
-	echo -n "Backing up $SOURCE: "
-	echo "Backing up $SOURCE" >> backup_log.txt
-	$BINARY $OPTIONS $SOURCE $DESTINATION >> backup_log.txt
+cat $BACKUPLIST|while read SOURCE TYPE; do
+  DESTINATION="$BACKUPFOLDER$SOURCE"    
+  
+  # Make sure there is a valid place to put the data
+  if [ -e "$DESTINATION" ]; then
+    if [ ! -d "$DESTINATION" ]; then
+      echo "'$DESTINATION' exists, but is not a directory, stopping."
+      exit 1
+    fi
+  else
+    mkdir -p $DESTINATION
+    echo "Created $DESTINATION"
+  fi
 
-	# How did it go?
-	if [ $? -eq 0 ]; then
-		echo "Successfull"
-		echo -n "Removing backups older than $MAXAGE: "
-		echo "Removing backups older than $MAXAGE" >> backup_log.txt
-		$BINARY --force --remove-older-than $MAXAGE $DESTINATION >> backup_log.txt
-		if [ $? -eq 0 ]; then
-			echo "Successfull"
-			echo "List of increments for $SOURCE: "
-			$BINARY --list-increment-sizes $DESTINATION
-		else
-			echo -n "Removing backups older than $MAXAGE failed, command: "
-			echo "$BINARY --force --remove-older-than $MAXAGE $DESTINATION"
-		fi
-	else
-		# It failed; don't clean up. Assume that the
-		# cron system mails output to a relevant
-		# recipient.
-		echo "Creating backup failed, command: "
-		echo "$BINARY $OPTIONS $SOURCE $DESTINATION"
-	fi
-	# 2 blank lines to seperate backup's
-	echo
-	echo
+  case $TYPE in
+    rdiff-backup)
+      echo -n "$TYPE backup of $SOURCE: "
+      echo "Backing up $SOURCE" >> backup_log.txt
+      $BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION >> backup_log.txt
+
+      # How did it go?
+      if [ $? -eq 0 ]; then
+        echo "Successfull"
+        echo -n "Removing backups older than $MAXAGE: "
+        echo "Removing backups older than $MAXAGE" >> backup_log.txt
+        #$BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION >> backup_log.txt
+        if [ $? -eq 0 ]; then
+            echo "Successfull"
+            echo "List of increments for $SOURCE: "
+            $BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION
+        else
+            echo -n "Removing backups older than $MAXAGE failed, command: "
+            echo "$BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION"
+        fi
+      else        
+        echo "Creating backup failed, command: "
+        echo "$BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION"
+      fi
+      ;;
+    rsync)
+      echo -n "$TYPE backup of $SOURCE: "
+      echo "Backing up $SOURCE" >> backup_log.txt
+      $BINARY_RSYNC -vH $SOURCE $DESTINATION >> backup_log.txt
+
+      # How did it go?
+      if [ $? -eq 0 ]; then
+        echo "Successfull"
+      else
+        echo "Creating backup failed, command: "
+        echo " $BINARY_RSYNC -vH $SOURCE $DESTINATION"
+      fi
+      ;;
+    *)
+      echo "Backup type not recognized, skipping."
+      exit
+      ;;
+  esac                     
 done
 
 read -p "Backup completed." key;
