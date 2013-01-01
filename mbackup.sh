@@ -1,18 +1,11 @@
 #!/bin/bash
 
 # change working directory to the script directory take into account links
-SOURCE="${BASH_SOURCE[0]}"
-DIR="$( dirname "$SOURCE" )"
-while [ -h "$SOURCE" ]
-do 
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-  DIR="$( cd -P "$( dirname "$SOURCE"  )" && pwd )"
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
+cd -P $DIR
 
 # process arguments
-while getopts "diw" flag 
+while getopts "diw" flag
 do
   if [ "$flag" == "d" ]; then
     DUMMY_RUN=1
@@ -30,12 +23,13 @@ if [ "$WAIT_FOR_START" == "1" ]; then
   read -p "Press any key to start the backup." key;
 fi
 
+echo "Reading backup list"
 # use escape character \ to include spaces in paths
 BACKUPLIST="mbackup-list"
 # test filename and file exists
 if [ ! -f "$BACKUPLIST" ];
 then
-  echo "Sorry, that file (files to backup) does not exist. Please make sure the name is correct."
+  echo "Sorry, backup list file \"$BACKUPLIST\" does not exist. Please make sure the name is correct."
   exit 1
 fi
 
@@ -59,8 +53,8 @@ OPTIONS="$EXCLUDE_OPTIONS $OTHER_OPTIONS"
 echo "Starting backup"
 
 cat $BACKUPLIST|while read SOURCE TYPE; do
-  DESTINATION="$BACKUPFOLDER$SOURCE"    
-  
+  DESTINATION="$BACKUPFOLDER$SOURCE"
+
   # Make sure there is a valid place to put the data
   if [ -e "$DESTINATION" ]; then
     if [ ! -d "$DESTINATION" ]; then
@@ -102,7 +96,7 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
             echo -n "Removing backups older than $MAXAGE failed, command: "
             echo "$BINARY_RDIFF_BACKUP --force --remove-older-than $MAXAGE $DESTINATION"
         fi
-      else        
+      else
         echo "Creating backup failed, command: "
         echo "$BINARY_RDIFF_BACKUP $OPTIONS $SOURCE $DESTINATION"
       fi
@@ -127,7 +121,7 @@ cat $BACKUPLIST|while read SOURCE TYPE; do
       exit
       ;;
   esac
-  echo ""                    
+  echo ""
 done
 
 # do we have to wait before closing
