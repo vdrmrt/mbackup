@@ -61,6 +61,7 @@ done
 # Run a command take into account verbosity and dummy runs
 run_command(){
   COMMAND=$1
+  SHOW_OUTPUT=$2
   if [ "$COMMAND" == "" ]; then
     echo "Internal error: command empty." >&2
     exit 1;
@@ -69,7 +70,11 @@ run_command(){
     echo -e "\nCommand: $COMMAND"
   fi
   if [ "$DUMMY_RUN" != "1" ]; then
-    $COMMAND >> $LOG
+    if [ -z "$SHOW_OUTPUT" ]; then
+      $COMMAND >> $LOG
+    else
+      $COMMAND
+    fi
   fi
 }
 
@@ -184,7 +189,7 @@ grep -v '^#' $BACKUPLIST|while read SOURCE TYPE; do
             echo "$GREEN[OK]$NORMAL"
             if [ "$SHOW_INCREMENTS" == "1" ]; then
               echo "List of increments for $SOURCE: "
-              run_command "$BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION"
+              run_command "$BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION" "SHOW_OUTPUT"
             fi
         else
             echo "Removing backups older than $MAXAGE failed." >&2
