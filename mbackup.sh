@@ -8,11 +8,30 @@ NORMAL=$(tput sgr0)
 # get directory to the script directory take into account links
 DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 
+display_usage(){
+  echo "Backup script loops over a list files and backups to a directory also creates a log (/var/log/mbackup.log as root $HOME/.mbackup.log as user)"
+  echo "Usage:"
+  echo -e " -d \t Dummy run don't run any real commands."
+  echo -e " -h \t Display usage."
+  echo -e " -i \t Show increments."
+  echo -e " -l \t File which contains list to backup and backup type. Defaults to /etc/mbackup-list when run as root otherwise $HOME/.mbackup-list"
+  echo -e " -m \t How long to keep version of changed files. The time interval is an integer followed by the character s, m, h, D, W, M, or Y, indicating seconds, minutes, hours, days, weeks, months, or years respectively, or a number of these concatenated.  For example, 32m  means  32  minutes,  and  3W2D10h7s  means  3 weeks, 2 days, 10 hours, and 7 seconds. "
+  echo -e " -t \t Path where to store backup. defaults to $HOME/backup"
+  echo -e " -v \t Verbose output."
+  echo -e " -w \t Wait on input from user before starting."
+
+
+}
+
 # process arguments
 while getopts ":dil:m:t:vw" opt; do
   case $opt in
     d)
       DUMMY_RUN=1
+      ;;
+    h)
+      display_usage
+      exit 0
       ;;
     i)
       SHOW_INCREMENTS=1
@@ -28,6 +47,7 @@ while getopts ":dil:m:t:vw" opt; do
     m)
       if [[ $OPTARG = -* ]]; then
 	echo "Option -m requires an argument." >&2
+	display_usage
         exit 1
       else
 	MAXAGE=$OPTARG
@@ -36,6 +56,7 @@ while getopts ":dil:m:t:vw" opt; do
     t)
       if [[ $OPTARG = -* ]]; then
 	echo "Option -t requires an argument." >&2
+	display_usage
         exit 1
       else
 	TARGETDIR=$OPTARG
@@ -49,10 +70,12 @@ while getopts ":dil:m:t:vw" opt; do
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
+      display_usage
       exit 1
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
+      display_usage
       exit 1
       ;;
   esac
@@ -76,6 +99,12 @@ run_command(){
       $COMMAND
     fi
   fi
+}
+
+log_error(){
+  ERROR_STR=$1
+  echo "$ERROR_STR" >&2
+  echo "$ERROR_STR" >> $LOG
 }
 
 echo "Reading backup list"
@@ -116,7 +145,7 @@ if [ -z "$TARGETDIR" ]; then
   TARGETDIR="$HOME/backup"
 fi
 if [ ! -w "$TARGETDIR" ]; then
-  echo "Target dir \"$TARGETDIR\" is not writable" >&2
+  log_error "Target dir \"$TARGETDIR\" is not writable"
   exit 1
 fi
 if [ "$VERBOSE" == "1" ]; then
@@ -150,12 +179,12 @@ if [ "$WAIT_FOR_START" == "1" ]; then
   read -p "Press any key to start the backup." key;
 fi
 echo "Starting backup"
-
+echo "`date +"%Y-%m-%d %H:%M:%S"` Starting backup" >> $LOG
 grep -v '^#' $BACKUPLIST|while read SOURCE TYPE; do
 
   if [ ! -e "$SOURCE" ]; then
-    echo "Backup source \"$SOURCE\" does not exists, skipping." >&2
-    echo ""
+    log_error "Backup source \"$SOURCE\" does not exists, skipping."
+    log_error ""
     continue
   fi
 
@@ -163,7 +192,7 @@ grep -v '^#' $BACKUPLIST|while read SOURCE TYPE; do
   # Make sure there is a valid place to put the data
   if [ -e "$DESTINATION" ]; then
     if [ ! -d "$DESTINATION" ]; then
-      echo "'$DESTINATION' exists, but is not a directory, stopping." >&2
+      log_error "'$DESTINATION' exists, but is not a directory, stopping."
       exit 1
     fi
   else
@@ -192,10 +221,10 @@ grep -v '^#' $BACKUPLIST|while read SOURCE TYPE; do
               run_command "$BINARY_RDIFF_BACKUP --list-increment-sizes $DESTINATION" "SHOW_OUTPUT"
             fi
         else
-            echo "Removing backups older than $MAXAGE failed." >&2
+            log_error "$RED[FAIL]$NORMAL"
         fi
       else
-	echo "$RED[FAIL]$NORMAL" >&2
+	log_error "$RED[FAIL]$NORMAL"
       fi
       ;;
     rsync)
@@ -207,16 +236,16 @@ grep -v '^#' $BACKUPLIST|while read SOURCE TYPE; do
       if [ $? -eq 0 ]; then
         echo "$GREEN[OK]$NORMAL"
       else
-        echo "$RED[FAIL]$NORMAL" >&2
+        log_error "$RED[FAIL]$NORMAL"
       fi
       ;;
     *)
-      echo "Backup type not recognized, skipping." >&2
+      log_error "Backup type not recognized, skipping."
       ;;
   esac
   echo ""
+  echo "" >> $LOG
 done
-
 # do we have to wait before closing
 if [ "$WAIT_FOR_START" == "1" ]; then
   read -p "Backup completed." key;
