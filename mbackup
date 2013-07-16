@@ -1,16 +1,21 @@
 #! /usr/bin/env python3.3
 
 import mbackupdb
+import mbackupmodules
 
 backup_groups = mbackupdb.Backup_groups();
 backup_group = backup_groups.getByBackupGroupId(5);
 if backup_group:
-    print(backup_group['backup_group_id'])
-    print(backup_group['backup_group_name'])
-    print(backup_group['backup_group_destination'])
+    print(backup_group.backup_group_id)
+    print(backup_group.backup_group_name)
+    print(backup_group.backup_group_destination)
     
-    backup_group['backup_group_id'] = '5'
-    backup_group['backup_group_name'] = 'testsd'
+    backup_group.backup_group_id = '11'
+    backup_group.backup_group_name = 'testsddd'
     backup_groups.save(backup_group)
 else:
     print('Record does not exist')
+    
+# Inserting new backup_group
+backup_group = mbackupmodules.Backup_group(backup_group_name = 'New backup group',backup_group_destination = 'New dest')
+backup_groups.save(backup_group)

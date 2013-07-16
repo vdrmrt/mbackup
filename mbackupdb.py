@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import mbackupmodules
 
 connection = None
 db_filename = 'mbackup.db'
@@ -13,15 +14,9 @@ def getConnection():
         with sqlite3.connect(db_filename) as connection:
             if db_is_new:
                 print('Creating schema')
-            connection.row_factory = dict_factory
+            connection.row_factory = sqlite3.Row
     
     return connection
-
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
 
 class Backup_groups:
     '''Represents the backup_groups table'''
@@ -38,19 +33,28 @@ class Backup_groups:
         cursor = self.connection.cursor()
         query = 'SELECT backup_group_id, backup_group_name, backup_group_destination FROM %s WHERE backup_group_id = ?' %self._name
         cursor.execute(query,(backup_group_id,))
-        res = cursor.fetchone()
-        return res
+        res = cursor.fetchone()       
+        
+        return mbackupmodules.Backup_group(res['backup_group_id'],res['backup_group_name'],res['backup_group_destination'])
     
-    def save(self,row):
-        if row[self._key]:
-            print('Updating:', row[self._key],row['backup_group_name'])         
-            query = 'UPDATE %s SET backup_group_name = ?, backup_group_destination = ? WHERE backup_group_id = ?' %self._name          
+    def save(self,backup_group):
+        print(backup_group.backup_group_id)
+        if backup_group.backup_group_id:
+            print('Updating:', backup_group.backup_group_id,backup_group.backup_group_name)         
+            query = 'UPDATE %s SET backup_group_name = ?, backup_group_destination = ? WHERE backup_group_id = ?' %self._name
             try:
                 with self.connection:
-                    self.connection.execute(query,(row['backup_group_name'],row['backup_group_destination'],row[self._key]))
-            except sqlite3.Error:
-                print('Could not update record')
-            
+                    self.connection.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination,backup_group.backup_group_id))
+            except sqlite3.Error as e:
+                print('Could not update record', e)
+        else:
+            print('Inserting:', backup_group.backup_group_name)         
+            query = 'INSERT INTO %s (backup_group_name,backup_group_destination) VALUES (?,?)' %self._name
+            try:
+                with self.connection:
+                    self.connection.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination))
+            except sqlite3.Error as e:
+                print('Could not insert record', e)
             
             
                          
