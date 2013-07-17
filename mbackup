@@ -10,7 +10,7 @@ if backup_group:
     print(backup_group.backup_group_name)
     print(backup_group.backup_group_destination)
     
-    backup_group.backup_group_id = '11'
+    backup_group.backup_group_id = '2'
     backup_group.backup_group_name = 'testsddd'
     backup_groups.save(backup_group)
 else:
@@ -19,3 +19,6 @@ else:
 # Inserting new backup_group
 backup_group = mbackupmodules.Backup_group(backup_group_name = 'New backup group',backup_group_destination = 'New dest')
 backup_groups.save(backup_group)
+
+# Deleting backup_group
+backup_groups.delete(25)

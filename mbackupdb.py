@@ -2,6 +2,8 @@ import os
 import sqlite3
 import mbackupmodules
 
+import pprint
+
 connection = None
 db_filename = 'mbackup.db'
 schema_filename = 'mbackup_schema.sql'
@@ -43,18 +45,33 @@ class Backup_groups:
             print('Updating:', backup_group.backup_group_id,backup_group.backup_group_name)         
             query = 'UPDATE %s SET backup_group_name = ?, backup_group_destination = ? WHERE backup_group_id = ?' %self._name
             try:
-                with self.connection:
-                    self.connection.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination,backup_group.backup_group_id))
+               cursor = self.connection.cursor()
+               cursor.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination,backup_group.backup_group_id))
+               print('Updated %s record(s)' %cursor.rowcount)
+               self.connection.commit()               
             except sqlite3.Error as e:
                 print('Could not update record', e)
         else:
             print('Inserting:', backup_group.backup_group_name)         
             query = 'INSERT INTO %s (backup_group_name,backup_group_destination) VALUES (?,?)' %self._name
             try:
-                with self.connection:
-                    self.connection.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination))
+               cursor = self.connection.cursor()
+               cursor.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination))
+               print('Inserted %s record(s)' %cursor.rowcount)
+               print('Inserted record rowid:', cursor.lastrowid)
+               self.connection.commit()               
             except sqlite3.Error as e:
                 print('Could not insert record', e)
-            
+
+    def delete(self,backup_group_id):
+        print('Deleting record:', backup_group_id)         
+        query = 'DELETE FROM %s WHERE backup_group_id = ?' %self._name
+        try:
+             cursor = self.connection.cursor()
+             cursor.execute(query,(backup_group_id,))                          
+             print('Deleted %s record(s)' %cursor.rowcount)
+             self.connection.commit()             
+        except sqlite3.Error as e:
+            print('Could not delete record', e)
             
                          
