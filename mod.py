@@ -1,4 +1,4 @@
-class Backup_group:
+class BackupGroup:
     backup_group_id = None
     backup_group_name = None
     backup_group_destination = None

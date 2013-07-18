@@ -1,9 +1,9 @@
 #! /usr/bin/env python3.3
 
-import mbackupdb
-import mbackupmodules
+import db # database objects
+import mod # modules
 
-backup_groups = mbackupdb.Backup_groups();
+backup_groups = db.DbBackupGroups();
 backup_group = backup_groups.getByBackupGroupId(5);
 if backup_group:
     print(backup_group.backup_group_id)
@@ -17,7 +17,7 @@ else:
     print('Record does not exist')
     
 # Inserting new backup_group
-backup_group = mbackupmodules.Backup_group(backup_group_name = 'New backup group',backup_group_destination = 'New dest')
+backup_group = mod.BackupGroup(backup_group_name = 'New backup group',backup_group_destination = 'New dest')
 backup_groups.save(backup_group)
 
 # Deleting backup_group
