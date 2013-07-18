@@ -6,19 +6,18 @@ import pprint
 
 connection = None
 db_filename = 'mbackup.db'
-schema_filename = 'mbackup_schema.sql'
 
 def getConnection():
     global connection
     if not connection:
         db_is_new = not os.path.exists(db_filename)
-        
+                
         with sqlite3.connect(db_filename) as connection:
             if db_is_new:
-                print('Creating schema')
+                createSchema();
             connection.row_factory = sqlite3.Row
-    
-    return connection
+        return connection
+
 
 class DbBackupGroups:
     '''Represents the backup_groups table'''
@@ -43,13 +42,14 @@ class DbBackupGroups:
         print(backup_group.backup_group_id)
         if backup_group.backup_group_id:
             print('Updating:', backup_group.backup_group_id,backup_group.backup_group_name)         
-            query = 'UPDATE %s SET backup_group_name = ?, backup_group_destination = ? WHERE backup_group_id = ?' %self._name
+            query = 'UPDATE %s SET backup_group_name = ?, backup_group_destination = ? WHERE %s = ?' % (self._name, self._key)
             try:
-               cursor = self.connection.cursor()
-               cursor.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination,backup_group.backup_group_id))
-               print('Updated %s record(s)' %cursor.rowcount)
-               self.connection.commit()               
+                cursor = self.connection.cursor()
+                cursor.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination,backup_group.backup_group_id))
+                print('Updated %i record(s)' %cursor.rowcount)
+                self.connection.commit()               
             except sqlite3.Error as e:
+                self.connection.rollback()   
                 print('Could not update record', e)
         else:
             print('Inserting:', backup_group.backup_group_name)         
@@ -57,7 +57,7 @@ class DbBackupGroups:
             try:
                cursor = self.connection.cursor()
                cursor.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination))
-               print('Inserted %s record(s)' %cursor.rowcount)
+               print('Inserted %i record(s)' %cursor.rowcount)
                print('Inserted record rowid:', cursor.lastrowid)
                self.connection.commit()               
             except sqlite3.Error as e:
@@ -65,13 +65,16 @@ class DbBackupGroups:
 
     def delete(self,backup_group_id):
         print('Deleting record:', backup_group_id)         
-        query = 'DELETE FROM %s WHERE backup_group_id = ?' %self._name
+        query = 'DELETE FROM %s WHERE %s = ?' %(self._name, self._key)
         try:
              cursor = self.connection.cursor()
              cursor.execute(query,(backup_group_id,))                          
-             print('Deleted %s record(s)' %cursor.rowcount)
+             print('Deleted %i record(s)' %cursor.rowcount)
              self.connection.commit()             
         except sqlite3.Error as e:
             print('Could not delete record', e)
             
+def createSchema():
+    schema_filename = 'mbackup_schema.sql'
+    print('Creating schema')
                          
