@@ -37,7 +37,7 @@ class DbBackupGroups:
         cursor.execute(query,(backup_group_id,))
         res = cursor.fetchone()       
         
-        return mbackupmodules.BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_destination'])
+        return mod.BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_destination'])
     
     def save(self,backup_group):
         print(backup_group.backup_group_id)
