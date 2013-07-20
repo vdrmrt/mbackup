@@ -2,23 +2,28 @@
 
 import db # database objects
 import mod # modules
+import cmdline # commandline
 
-backup_groups = db.DbBackupGroups();
-backup_group = backup_groups.getByBackupGroupId(5);
-if backup_group:
-    print(backup_group.backup_group_id)
-    print(backup_group.backup_group_name)
-    print(backup_group.backup_group_destination)
-    
-    backup_group.backup_group_id = '2'
-    backup_group.backup_group_name = 'testsddd'
-    backup_groups.save(backup_group)
-else:
-    print('Record does not exist')
-    
-# Inserting new backup_group
-backup_group = mod.BackupGroup(backup_group_name = 'New backup group',backup_group_destination = 'New dest')
-backup_groups.save(backup_group)
+if __name__ == '__main__':
+    cmdline.Cmdline().cmdloop()
 
-# Deleting backup_group
-backup_groups.delete(25)
+
+# backup_groups = db.DbBackupGroups();
+# backup_group = backup_groups.getByBackupGroupId(5);
+# if backup_group:
+#     print(backup_group.backup_group_id)
+#     print(backup_group.backup_group_name)
+#     print(backup_group.backup_group_destination)
+#     
+#     backup_group.backup_group_id = '2'
+#     backup_group.backup_group_name = 'testsddd'
+#     backup_groups.save(backup_group)
+# else:t
+#     print('Record does not exist')
+#     
+# # Inserting new backup_group
+# backup_group = mod.BackupGroup(backup_group_name = 'New backup group',backup_group_destination = 'New dest')
+# backup_groups.save(backup_group)
+# 
+# # Deleting backup_group
+# backup_groups.delete(25)
