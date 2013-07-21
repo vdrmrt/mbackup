@@ -5,8 +5,10 @@ class Cmdline(cmd.Cmd):
     
     prompt = 'mbackup> '
 
-    tables = [ 'backup_groups','backups']
-    tableActions = ['query','new','update','delete']
+    tableArgs = [
+                  ['backup_groups','backups'], # table
+                  ['query','new','update','delete'] # actions                
+                 ]
     
 
     def do_table(self, action):
@@ -17,14 +19,14 @@ class Cmdline(cmd.Cmd):
                 raise Exception('No table specified')                    
             else:
                 table = arg[0]
-                if table not in self.tables:
+                if table not in self.tableArgs[0]:
                     raise Exception('Table "%s" does not exist' %table)                    
         
             if len(arg) < 2:
                 raise Exception('No action specified')                                
             else:
                 action = arg[1]
-                if action not in self.tableActions:
+                if action not in self.tableArgs[1]:
                     raise Exception('Action "%s" does not exist' %action)
                   
         except Exception as e:
@@ -32,27 +34,22 @@ class Cmdline(cmd.Cmd):
                         
             
     def complete_table(self,text,line,begidx,endidx):
-#       print('\n')
-#       print('text: ',text)
-#       print('line: ',line)
-#       print('begidx: ',begidx)
-#       print('endidx: ',endidx)
-
-        arg = line.split()
-#        print('arg: ',arg)
-            
+#        print('\n')
+#        print('text|' + text + '|end')
+#        print('line|' + line + '|end')
+#        print('begidx: ',begidx)
+#        print('endidx: ',endidx)
+      
+        args = line.split()
+        args.pop(0)       
+#        print('args: ',args)
+#        print('\n')
         
-        # when the last argument and text are not equal (arg[-1] == text) we have an invalid action and we don't have complete any further         
-        if len(arg) < 2:
-            completions = self.tables
-        elif arg[1] in self.tables:
-            if len(arg) < 3:
-                completions = self.tableActions
-            else:                
-                completions = [f for f in self.tableActions if arg[-1] == text and f.startswith(text)]
-        else:
-            completions = [f for f in self.tables if arg[-1] == text and f.startswith(text)]
-                    
+        if len(text) == 0: # return all possible options when no input is available
+            completions = self.tableArgs[len(args)]
+        elif text not in self.tableArgs[len(args) -1]: # check if input is a valid value if not run it against allowed values
+            completions = [f for f in self.tableArgs[len(args) -1] if f.startswith(text)]
+                
         return completions
             
     def help_table(self):
