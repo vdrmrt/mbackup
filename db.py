@@ -73,7 +73,16 @@ class DbBackupGroups:
              self.connection.commit()             
         except sqlite3.Error as e:
             print('Could not delete record', e)
-            
+    
+    def getGroupNames(self):
+        query = 'SELECT backup_group_name FROM backup_groups'
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        res = []
+        for row in cursor.fetchall():
+            res.append(row['backup_group_name'])
+        return res
+                    
 def createSchema():
     schema_filename = 'mbackup_schema.sql'
     print('Creating schema')
