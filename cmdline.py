@@ -124,13 +124,14 @@ class Cmdline(cmd.Cmd):
     def getGroupNames(self,arg):        
         if not self.groupNames:            
             bgs = db.getDbObj('BackupGroups');            
-            self.groupNames = bgs.getGroupNames();        
+            self.groupNames = bgs.getGroupNames();            
         return self.groupNames
     
-    def getTable(self,tableName):
-        if tableName not in self.tables:
-            self.tables['tableName'] = ctrl.Table(tableName)
-        return self.tables['tableName']
+
+    def postcmd(self, stop, line):
+        # Reset group names after command so new group names will be fetched with the next command
+        self.groupNames = None
+        return cmd.Cmd.postcmd(self, stop, line)
 
     def do_EOF(self, line):
         return True
