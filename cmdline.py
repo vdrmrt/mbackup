@@ -1,12 +1,23 @@
 import cmd
 import ctrl
 import db
+import shlex
 
 class Cmdline(cmd.Cmd):
     """Simple command processor example."""
     
     prompt = 'mbackup> '
-
+    
+    
+    # args define the allowed arguments 
+    # the arguments are defined in a dictionary this dictionary defines all the arguments in dictionaries or lists
+    # the keys of the main dictionary must correspond the command methods of cmd.Cmd kike do_XXXXX
+    # the keys in the dictionaries represents the arguments
+    # the lists must contains only 2 elements:
+    # * the first element is a string which represents a method that needs to be executed to get the arguments 
+    #   the previous argument is passed to the method
+    # * the second element is a again a dictionary or a list (providing the second element of list as a list allows chaining of methods)
+    # When further arguments are available the dictionary and list end with None.           
     args = {'group': {'add': None,
                       'update': ['getGroupNames',None],
                       'delete': ['getGroupNames',None],
@@ -17,37 +28,44 @@ class Cmdline(cmd.Cmd):
                                 ],
                       'run': None
                       },
-#             'backup': {'add': None,
-#                       'update': ['getGroupNames',None],
-#                       'delete': ['getGroupNames',None],
-#                       'info':   ['getGroupNames',{'size': None,
-#                                                   'lastrun': None,
-#                                                   'nextrun': None
-#                                                  }
-#                                 ],
-#                       'run': None
-#                       },
-            'backup': ['getGroupNames',{'size': None,
-                                        'lastrun': None,
-                                        'nextrun': {'size': None,
-                                                  'lastrun': ['getGroupNames',None],
+            'backup': {'add': None,
+                      'update': ['getGroupNames',None],
+                      'delete': ['getGroupNames',None],
+                      'info':   ['getGroupNames',{'size': None,
+                                                  'lastrun': None,
                                                   'nextrun': None
                                                  }
-                                        }
-                      ]
-                                            
-            }
+                                ],
+                      'run': None
+                      },
+            }    
+    
     
     groupNames = None
                 
-    def do_group(self,action):
-        pass
+    def do_group(self,line):
+        arg = self.parseLine(line)
+        try:
+            if len(arg) == 0:
+                raise Exception('No command specified')      
+            
+            cmd = arg.pop(0)
+            
+            if cmd == 'add':
+                print('Adding') 
+            elif cmd == 'update':
+                print('Updating')
+            elif cmd == 'delete':
+                print('Deleting')
+            elif cmd == 'info':
+                print ('Getting info')
+            else:
+               raise Exception('Command %s does not exists'%cmd)
+        except Exception as e:
+            print(e)             
     
-    def complete_group(self,text,line,begidx,endidx):
-        args = line.split()
-        args.pop(0)   
-        
-        return self.getCompletions('group',args,text)
+    def complete_group(self,text,line,begidx,endidx):                
+        return self.getCompletions('group',line,text)
     
     def help_group(self):
         pass
@@ -64,32 +82,52 @@ class Cmdline(cmd.Cmd):
     def help_backup(self):
         pass
         
-    def getCompletions(self,cmd,args,text):
-        if len(text) > 0:
-            args.pop() 
+    def getCompletions(self,cmd,line,text):
         
+        cmdArgs = line.split()
+        cmdArgs.pop(0) # remove the first argument which is the command  
+        
+        # remove the last element of the given arguments when the last argument is not finished
+        if len(text) > 0:
+            cmdArgs.pop() 
+        
+        # count the entered arguments
+        c = len(cmdArgs)
+        
+        # get the possible arguments for the command
         posArg = self.args[cmd]
                         
-        for x in range(0,len(args)):                        
-            if isinstance(posArg, dict):                                                  
-                posArg = posArg[args[x]]              
+        # loop over the entered arguments to reduce the possible arguments with the arguments already given
+        for x in range(0,c):                        
+            if isinstance(posArg, dict):
+                posArg = posArg[cmdArgs[x]]              
                 continue                            
-            if isinstance(posArg,list):                
-                posArg = posArg[1]                                           
-                                                                        
+            if isinstance(posArg,list):             
+                posArg = posArg[1]                        
+                
+        # get the possible arguments in a list                                                          
         if isinstance(posArg, dict):
             posArg = list(posArg.keys())
         elif isinstance(posArg, list):
-            posArg = getattr(self, posArg[0])()  
+            # execute method to get a list pass the last argument as a parameter      
+            posArg = getattr(self, posArg[0])(cmdArgs[-1] if c > 0 else None)  
 
         if len(text) == 0: # return all possible options when no input is available
             completions = posArg
         elif text not in posArg: # check if input is finished if not run it against allowed values
             completions = [f for f in posArg if f.startswith(text)]
         
-        return completions      
+        return completions
+    
+    def parseLine(self,line):
+        arg = None        
+        try:
+            arg = shlex.split(line)
+        except Exception as e:
+            print('Error:',e)
+        return arg
         
-    def getGroupNames(self):        
+    def getGroupNames(self,par):        
         if not self.groupNames:            
             backup_groups = db.DbBackupGroups();            
             self.groupNames = backup_groups.getGroupNames();        
@@ -99,44 +137,6 @@ class Cmdline(cmd.Cmd):
         if tableName not in self.tables:
             self.tables['tableName'] = ctrl.Table(tableName)
         return self.tables['tableName']
-
-    def do_table(self, action):
-        arg = action.split()
-        
-        try:
-            if len(arg) < 1:
-                raise Exception('No table specified')                    
-            else:
-                table = arg[0]
-                if table not in self.tableArgs[0]:
-                    raise Exception('Table "%s" does not exist' %table)                    
-        
-            if len(arg) < 2:
-                raise Exception('No action specified')                                
-            else:
-                action = arg[1]
-                if action not in self.tableArgs[1]:
-                    raise Exception('Action "%s" does not exist' %action)
-                        
-            tbl = self.getTable(table)
-            getattr(tbl,action + 'Action')()
-                  
-        except Exception as e:
-            print(e)            
-                        
-            
-    def complete_table(self,text,line,begidx,endidx):                
-        pass
-            
-    def help_table(self):
-        print('\n'.join([ 'table <table name> <action> <parameters>','Do an action on a table.',]))
-    
-    
-    
-    
-    
-    
-    
 
     def do_EOF(self, line):
         return True
