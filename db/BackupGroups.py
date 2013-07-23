@@ -57,8 +57,7 @@ class BackupGroups:
         except sqlite3.Error as e:
             print('Could not delete record', e)
     
-    def getGroupNames(self):
-        print('getting group names')
+    def getGroupNames(self):    
         query = 'SELECT backup_group_name FROM backup_groups'        
         cursor = self.connection.cursor()        
         cursor.execute(query)            
