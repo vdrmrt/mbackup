@@ -1,7 +1,5 @@
 #! /usr/bin/env python3.3
 
-import db # database objects
-import mod # modules
 import cmdline # commandline
 
 if __name__ == '__main__':

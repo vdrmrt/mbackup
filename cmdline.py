@@ -3,9 +3,7 @@ import ctrl
 import db
 import shlex
 
-class Cmdline(cmd.Cmd):
-    """Simple command processor example."""
-    
+class Cmdline(cmd.Cmd):    
     prompt = 'mbackup> '
     
     
@@ -47,22 +45,18 @@ class Cmdline(cmd.Cmd):
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
-                raise Exception('No command specified')      
+                 Exception('No command specified')      
             
             cmd = arg.pop(0)
-            
-            if cmd == 'add':
-                print('Adding') 
-            elif cmd == 'update':
-                print('Updating')
-            elif cmd == 'delete':
-                print('Deleting')
-            elif cmd == 'info':
-                print ('Getting info')
-            else:
-               raise Exception('Command %s does not exists'%cmd)
+                                   
+            ctrlObj = ctrl.getCtrl('Group')            
+            ctrlAction = getattr(ctrlObj,cmd)   
+        except AttributeError as ae:
+            print('Command %s is not defined' %cmd)
         except Exception as e:
-            print(e)             
+            print(e)
+        else:
+            ctrlAction(arg)
     
     def complete_group(self,text,line,begidx,endidx):                
         return self.getCompletions('group',line,text)
@@ -110,7 +104,7 @@ class Cmdline(cmd.Cmd):
             posArg = list(posArg.keys())
         elif isinstance(posArg, list):
             # execute method to get a list pass the last argument as a parameter      
-            posArg = getattr(self, posArg[0])(cmdArgs[-1] if c > 0 else None)  
+            posArg = getattr(self, posArg[0])(cmdArgs if c > 0 else None)  
 
         if len(text) == 0: # return all possible options when no input is available
             completions = posArg
@@ -127,10 +121,10 @@ class Cmdline(cmd.Cmd):
             print('Error:',e)
         return arg
         
-    def getGroupNames(self,par):        
+    def getGroupNames(self,arg):        
         if not self.groupNames:            
-            backup_groups = db.DbBackupGroups();            
-            self.groupNames = backup_groups.getGroupNames();        
+            bgs = db.getDbObj('BackupGroups');            
+            self.groupNames = bgs.getGroupNames();        
         return self.groupNames
     
     def getTable(self,tableName):

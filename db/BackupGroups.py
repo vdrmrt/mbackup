@@ -1,33 +1,15 @@
-import os
-import sqlite3
-import mod #modules
+import mod
+import db
 
-import pprint
-
-connection = None
-db_filename = 'mbackup.db'
-
-def getConnection():
-    global connection
-    if not connection:
-        db_is_new = not os.path.exists(db_filename)
-                
-        with sqlite3.connect(db_filename) as connection:
-            if db_is_new:
-                createSchema();
-            connection.row_factory = sqlite3.Row
-        return connection
-
-
-class DbBackupGroups:
+class BackupGroups:
     '''Represents the backup_groups table'''
     
     connection = None
     _key = 'backup_group_id'
     _name = 'backup_groups'
         
-    def __init__(self):
-        self.connection = getConnection();
+    def __init__(self):                
+        self.connection = db.getConnection();        
     
     def getByBackupGroupId(self,backup_group_id):
         print('Getting record',backup_group_id)
@@ -57,6 +39,7 @@ class DbBackupGroups:
             try:
                cursor = self.connection.cursor()
                cursor.execute(query,(backup_group.backup_group_name,backup_group.backup_group_destination))
+               backup_group.backup_group_id = cursor.lastrowid
                print('Inserted %i record(s)' %cursor.rowcount)
                print('Inserted record rowid:', cursor.lastrowid)
                self.connection.commit()               
@@ -75,9 +58,10 @@ class DbBackupGroups:
             print('Could not delete record', e)
     
     def getGroupNames(self):
-        query = 'SELECT backup_group_name FROM backup_groups'
-        cursor = self.connection.cursor()
-        cursor.execute(query)
+        print('getting group names')
+        query = 'SELECT backup_group_name FROM backup_groups'        
+        cursor = self.connection.cursor()        
+        cursor.execute(query)            
         res = []
         for row in cursor.fetchall():
             res.append(row['backup_group_name'])
