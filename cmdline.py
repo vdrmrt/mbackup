@@ -17,7 +17,12 @@ class Cmdline(cmd.Cmd):
     # * the second element is a again a dictionary or a list (providing the second element of list as a list allows chaining of methods)
     # When further arguments are available the dictionary and list end with None.           
     args = {'group': {'add': None,
-                      'update': ['getGroupNames',None],
+                      'update': ['getGroupNames',{'name': None,
+                                                  'desc': None,
+                                                  'dest': None,
+                                                  'expr': None
+                                                 }
+                                ],
                       'delete': ['getGroupNames',None],
                       'info':   ['getGroupNames',{'size': None,
                                                   'lastrun': None,
@@ -41,11 +46,11 @@ class Cmdline(cmd.Cmd):
     
     groupNames = None
                 
-    def do_group(self,line):
+    def do_group(self,line):        
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
-                 Exception('No command specified')      
+                 raise Exception('No command specified')      
             
             cmd = arg.pop(0)
                                    
@@ -101,15 +106,15 @@ class Cmdline(cmd.Cmd):
                 
         # get the possible arguments in a list                                                          
         if isinstance(posArg, dict):
-            posArg = list(posArg.keys())
+            posArgList = list(posArg.keys())
         elif isinstance(posArg, list):
             # execute method to get a list pass the last argument as a parameter      
-            posArg = getattr(self, posArg[0])(cmdArgs if c > 0 else None)  
+            posArgList = getattr(self, posArg[0])(cmdArgs if c > 0 else None)  
 
         if len(text) == 0: # return all possible options when no input is available
-            completions = posArg
+            completions = posArgList
         elif text not in posArg: # check if input is finished if not run it against allowed values
-            completions = [f for f in posArg if f.startswith(text)]
+            completions = [f for f in posArgList if f.startswith(text)]
         
         return completions
     
@@ -125,8 +130,7 @@ class Cmdline(cmd.Cmd):
         if not self.groupNames:            
             bgs = db.getDbObj('BackupGroups');            
             self.groupNames = bgs.getGroupNames();            
-        return self.groupNames
-    
+        return self.groupNames      
 
     def postcmd(self, stop, line):
         # Reset group names after command so new group names will be fetched with the next command
