@@ -29,14 +29,14 @@ class BackupGroups:
             return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
     
     def save(self,backup_group):        
-        if backup_group.backup_group_id:                 
+        if backup_group.id:                 
             query = 'UPDATE {table} SET backup_group_name = ?, backup_group_description = ? ,backup_group_destination = ? WHERE {k} = ?'.format(table=self._name,k=self._key)
             try:
                 cursor = self.connection.cursor()
-                cursor.execute(query,(backup_group.backup_group_name,
-                                      backup_group.backup_group_description,
-                                      backup_group.backup_group_destination,
-                                      backup_group.backup_group_id))
+                cursor.execute(query,(backup_group.name,
+                                      backup_group.description,
+                                      backup_group.destination,
+                                      backup_group.id))
                 print('Updated {c} record(s)'.format(c=cursor.rowcount))
                 self.connection.commit()               
             except sqlite3.Error as e:
@@ -46,9 +46,10 @@ class BackupGroups:
             query = 'INSERT INTO {t} (backup_group_name,backup_group_description,backup_group_destination) VALUES (?,?,?)'.format(t=self._name)
             try:
                cursor = self.connection.cursor()
-               cursor.execute(query,(backup_group.backup_group_name,
-                                     backup_group.backup_group_description,
-                                     backup_group.backup_group_destination))
+               cursor.execute(query,(backup_group.name,
+                                     backup_group.
+                                     description,
+                                     backup_group.destination))
                backup_group.backup_group_id = cursor.lastrowid
                print('Inserted {c} record(s)'.format(c=cursor.rowcount))
                print('Inserted record rowid:', cursor.lastrowid)

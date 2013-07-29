@@ -1,11 +1,6 @@
 class BackupGroup:
-    backup_group_id = None
-    backup_group_name = None
-    backup_group_description = None
-    backup_group_destination = None
-    
-    def __init__(self,backup_group_id = None,backup_group_name = None,backup_group_description = None,backup_group_destination = None):
-        self.backup_group_id = backup_group_id
-        self.backup_group_name = backup_group_name
-        self.backup_group_description = backup_group_description
-        self.backup_group_destination = backup_group_destination
+    def __init__(self,id = None,name = None,description = None,destination = None):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.destination = destination

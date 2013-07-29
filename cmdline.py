@@ -2,49 +2,27 @@ import cmd
 import ctrl
 import db
 import shlex
+import ast
 
 class Cmdline(cmd.Cmd):    
     prompt = 'mbackup> '
     
+    def __init__(self):
+        super().__init__()
     
-    # args define the allowed arguments 
-    # the arguments are defined in a dictionary this dictionary defines all the arguments in dictionaries or lists
-    # the keys of the main dictionary must correspond the command methods of cmd.Cmd kike do_XXXXX
-    # the keys in the dictionaries represents the arguments
-    # the lists must contains only 2 elements:
-    # * the first element is a string which represents a method that needs to be executed to get the arguments 
-    #   the previous argument is passed to the method
-    # * the second element is a again a dictionary or a list (providing the second element of list as a list allows chaining of methods)
-    # When further arguments are available the dictionary and list end with None.           
-    args = {'group': {'add': None,
-                      'update': ['getGroupNames',{'name': None,
-                                                  'desc': None,
-                                                  'dest': None,
-                                                  'expr': None
-                                                 }
-                                ],
-                      'delete': ['getGroupNames',None],
-                      'info':   ['getGroupNames',{'size': None,
-                                                  'lastrun': None,
-                                                  'nextrun': None
-                                                 }
-                                ],
-                      'run': None
-                      },
-            'backup': {'add': None,
-                      'update': ['getGroupNames',None],
-                      'delete': ['getGroupNames',None],
-                      'info':   ['getGroupNames',{'size': None,
-                                                  'lastrun': None,
-                                                  'nextrun': None
-                                                 }
-                                ],
-                      'run': None
-                      },
-            }    
-    
-    
-    groupNames = None
+        self.groupNames = None
+        
+        # setup the possible arguments
+        posArg = arg('arg')
+        posArg.add('group')
+        posArg.group.add('add')
+        posArg.group.add('update')
+        posArg.group.update.addFunction('groups','getGroupNames')
+        posArg.group.update.groups.add('name')
+        posArg.group.update.groups.add('desc')
+        posArg.group.update.groups.add('dest')                
+        posArg.group.update.groups.add('expr')        
+        self.posArg = posArg
                 
     def do_group(self,line):        
         arg = self.parseLine(line)
@@ -54,14 +32,34 @@ class Cmdline(cmd.Cmd):
             
             cmd = arg.pop(0)
                                    
-            ctrlObj = ctrl.getCtrl('Group')            
-            ctrlAction = getattr(ctrlObj,cmd)   
+            ctrlObj = ctrl.getCtrl('Group')
+            ctrlAction = getattr(ctrlObj,cmd)
+            if cmd == 'add':                 
+                name = arg.pop(0)
+                desc = arg.pop(0)
+                dest = arg.pop(0)
+                ctrlAction(name = name,description = desc,destination = dest)              
+            elif cmd == 'update':
+                name = arg.pop(0)
+                field = arg.pop(0)
+                if field == 'name':    
+                    values = {'name': arg.pop(0)}
+                elif field == 'dest':
+                    values = {'destination': arg.pop(0)}
+                elif field == 'desc':
+                    values = {'description': arg.pop(0)}
+                elif field == 'expr':
+                    values = ast.literal_eval(arg.pop(0))                
+                ctrlAction(name = name,values = values)
+                                                            
         except AttributeError as ae:
-            print('Command %s is not defined' %cmd)
+            print('Command  is not defined'.format(cmd=cmd))
+        except IndexError as ie:
+            print('To few arguments for {cmd}'.format(cmd=cmd))
+        except SyntaxError as se:
+            print('Invalid syntax')
         except Exception as e:
-            print(e)
-        else:
-            ctrlAction(arg)
+            raise e
     
     def complete_group(self,text,line,begidx,endidx):                
         return self.getCompletions('group',line,text)
@@ -83,8 +81,7 @@ class Cmdline(cmd.Cmd):
         
     def getCompletions(self,cmd,line,text):
         
-        cmdArgs = line.split()
-        cmdArgs.pop(0) # remove the first argument which is the command  
+        cmdArgs = line.split()    
         
         # remove the last element of the given arguments when the last argument is not finished
         if len(text) > 0:
@@ -93,27 +90,28 @@ class Cmdline(cmd.Cmd):
         # count the entered arguments
         c = len(cmdArgs)
         
-        # get the possible arguments for the command
-        posArg = self.args[cmd]
+        # get the possible arguments for the command   
+        posArg = self.posArg
                         
         # loop over the entered arguments to reduce the possible arguments with the arguments already given
-        for x in range(0,c):                        
-            if isinstance(posArg, dict):
-                posArg = posArg[cmdArgs[x]]              
-                continue                            
-            if isinstance(posArg,list):             
-                posArg = posArg[1]                        
+        for x in range(0,c):    
+            if posArg.getFunction():                
+                posArg = posArg.getFirstChild()
+            elif posArg.childExsists(cmdArgs[x]):
+                posArg = posArg.getChild(cmdArgs[x])        
+            else:
+                break  
                 
         # get the possible arguments in a list                                                          
-        if isinstance(posArg, dict):
-            posArgList = list(posArg.keys())
-        elif isinstance(posArg, list):
-            # execute method to get a list pass the last argument as a parameter      
-            posArgList = getattr(self, posArg[0])(cmdArgs if c > 0 else None)  
+        if posArg.getFunction():            
+            posArgList = getattr(self, posArg.getFunction())(cmdArgs if c > 0 else None)
+        else:
+            # execute method to get a list pass the last argument as a parameter                  
+            posArgList = posArg.getChildNames()
 
         if len(text) == 0: # return all possible options when no input is available
             completions = posArgList
-        elif text not in posArg: # check if input is finished if not run it against allowed values
+        elif not posArg.childExsists(text): # check if input is finished if not run it against allowed values
             completions = [f for f in posArgList if f.startswith(text)]
         
         return completions
@@ -142,3 +140,56 @@ class Cmdline(cmd.Cmd):
     
     def postloop(self):
         print()
+        
+        
+class arg(object):
+        
+    def __init__(self, name):
+        self._name = name
+        self._children = {}
+        self._function = False       
+        
+    def add(self,child):
+        if isinstance(child,str):
+            self._children[child] = arg(child)
+        elif isinstance(child,par):
+            self._children[child._name] = child
+        else:
+            raise Exception('Unable to add child, child is not an par object or string.')
+        
+    def getName(self):
+        return self._name
+    
+    def getChild(self,name):
+        if name in self._children:
+            return self._children[name]
+        else:
+            raise AttributeError('{obj} object has no attribute {attr}'.format(obj=type(self).__name__,attr=name))
+    
+    def __getattr__(self,attr):
+        return self.getChild(attr)
+    
+    def getFirstChild(self):
+        return next (iter (self._children.values()))
+    
+    def childExsists(self,name):
+        return name in self._children
+        
+    def addFunction(self,child,f):
+        self.add(child)
+        self._function = f
+        
+    def getFunction(self):
+        return self._function       
+    
+    def getChildNames(self):
+        ret = []
+        for k in self._children:
+            ret.append(k)
+        return ret
+    
+    def __repr__(self,level = 0):
+        ret = "\t"*level + self._name + "\n"
+        for child in self._children.values():
+            ret += child.__repr__(level+1)        
+        return ret

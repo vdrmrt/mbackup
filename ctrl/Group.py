@@ -8,43 +8,34 @@ class Group:
     def __init__(self):
         self.backup_groups = db.getDbObj('BackupGroups');
     
-    def add(self,arg):
-        if len(arg) < 2:
-            print('Expecting 2 values {l} found'.format(l=len(arg)))
-            return False 
-        
-        backup_group_name = arg[0]
-        backup_group_description = arg[1]
-        backup_group_destination = arg[2]
-        
-        bg = BackupGroup(backup_group_name = backup_group_name,
-                         backup_group_description = backup_group_description,
-                         backup_group_destination = backup_group_destination)
+    def add(self,name = None,description = None,destination = None):
+        try:            
+            if not name:            
+                raise Exception('Name not provided')
+            if not description:
+                raise Exception('Description not provided')
+            if not destination:
+                raise Exception('Destination not provided')
+        except Exception as e:
+            print(e)
+        else:
+            bg = BackupGroup(name = name,
+                             description = description,
+                             destination = destination)
     
-        self.backup_groups.save(bg)
+            self.backup_groups.save(bg)
         
-    def update(self,arg):
-        fields = {'name': backup_group_name,
-                  'desc': backup_group_description,
-                  'dest': backup_group_destination}
-               
-        if len(arg) < 3:
-            print('Expecting 3 values {l} found.'.format(l=len(arg)))
-            return False     
-        
-        bg = self.backup_groups.getByBackupGroupName(arg[0])
-        
+    def update(self,name = None,values = None):        
+        bg = self.backup_groups.getByBackupGroupName(name)        
         try:
             if not bg:
-                raise Exception('Group {g} does not exist.'.format(g=arg[0]))
-            if arg[1] == 'name':  
-                bg.backup_group_name = arg[2]
-            elif arg[1] == 'desc':
-                bg.backup_group_description = arg[2]
-            elif arg[1] == 'dest':
-                bg.backup_group_destination = arg[2]
-            else:
-                raise Exception('{a} is not a valid field.'.format(a=arg[1]))        
+                raise Exception('Group {g} does not exist.'.format(g=name))                
+            for attr, value in values.items():                             
+                if hasattr(bg,attr):
+                    setattr(bg,attr,value)
+                else:
+                    raise Exception('{a} is not a valid field.'.format(a=attr))
+            print(bg.name)           
         except Exception as e:
             print(e)
         else:
