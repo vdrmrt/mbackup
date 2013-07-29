@@ -35,12 +35,9 @@ class Cmdline(cmd.Cmd):
             ctrlObj = ctrl.getCtrl('Group')
             ctrlAction = getattr(ctrlObj,cmd)
             if cmd == 'add':                 
-                name = arg.pop(0)
-                desc = arg.pop(0)
-                dest = arg.pop(0)
-                ctrlAction(name = name,description = desc,destination = dest)              
+                par = {'name': arg.pop(0), 'description': arg.pop(0),'destination': arg.pop(0) }                     
             elif cmd == 'update':
-                name = arg.pop(0)
+                par = {'name': arg.pop(0)}
                 field = arg.pop(0)
                 if field == 'name':    
                     values = {'name': arg.pop(0)}
@@ -49,9 +46,10 @@ class Cmdline(cmd.Cmd):
                 elif field == 'desc':
                     values = {'description': arg.pop(0)}
                 elif field == 'expr':
-                    values = ast.literal_eval(arg.pop(0))                
-                ctrlAction(name = name,values = values)
-                                                            
+                    values = ast.literal_eval(arg.pop(0))
+                else:
+                    raise Exception('Field {f} unknown'.format(f=field))              
+                par['values'] = values                                                        
         except AttributeError as ae:
             print('Command  is not defined'.format(cmd=cmd))
         except IndexError as ie:
@@ -59,7 +57,9 @@ class Cmdline(cmd.Cmd):
         except SyntaxError as se:
             print('Invalid syntax')
         except Exception as e:
-            raise e
+            print(e)
+        else:
+            ctrlAction(**par)
     
     def complete_group(self,text,line,begidx,endidx):                
         return self.getCompletions('group',line,text)
