@@ -115,6 +115,8 @@ class Cmdline(cmd.Cmd):
             completions = [f for f in posArgList if f.startswith(text)]
         else:
             completions = []
+            
+        completions = list(map(lambda s: '"'+ s + '"' if " " in s else s,completions))
         
         return completions
     
