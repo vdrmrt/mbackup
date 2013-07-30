@@ -1,6 +1,10 @@
 #! /usr/bin/env python3.3
 
 import cmdline # commandline
+import sys
 
 if __name__ == '__main__':
-    cmdline.Cmdline().cmdloop()
+    if len(sys.argv) > 1:
+        cmdline.Cmdline().onecmd(' '.join(sys.argv[1:]))
+    else:
+        cmdline.Cmdline().cmdloop()
