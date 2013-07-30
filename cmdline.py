@@ -113,6 +113,8 @@ class Cmdline(cmd.Cmd):
             completions = posArgList
         elif not posArg.childExsists(text): # check if input is finished if not run it against allowed values
             completions = [f for f in posArgList if f.startswith(text)]
+        else:
+            completions = []
         
         return completions
     
