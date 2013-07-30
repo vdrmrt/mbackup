@@ -80,12 +80,11 @@ class Cmdline(cmd.Cmd):
         pass
         
     def getCompletions(self,cmd,line,text):
-        
-        cmdArgs = line.split()    
-        
-        # remove the last element of the given arguments when the last argument is not finished
+        # text from line, because last argument is not completed
         if len(text) > 0:
-            cmdArgs.pop() 
+            line = line.replace(text,'')
+            
+        cmdArgs = self.parseLine(line)
         
         # count the entered arguments
         c = len(cmdArgs)
@@ -109,6 +108,7 @@ class Cmdline(cmd.Cmd):
             # execute method to get a list pass the last argument as a parameter                  
             posArgList = posArg.getChildNames()
 
+
         if len(text) == 0: # return all possible options when no input is available
             completions = posArgList
         elif not posArg.childExsists(text): # check if input is finished if not run it against allowed values
@@ -121,7 +121,7 @@ class Cmdline(cmd.Cmd):
         return completions
     
     def parseLine(self,line):
-        arg = None        
+        arg = []       
         try:
             arg = shlex.split(line)
         except Exception as e:
