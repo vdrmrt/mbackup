@@ -55,5 +55,15 @@ class Group:
             print('Deleted {c} record(s)'.format(c=rowcount))
         except Exception as e:
             print('An error occurred when deleting record:', e)
+    
+    def info(self,name):
+        try:
+            bg = self.backup_groups.getByBackupGroupName(name)
+            print("Id:",bg.id)
+            print("Name:",bg.name)
+            print("Description:",bg.description)
+            print("Destination:",bg.destination)
+        except Exception as e:
+            print('An error getting record:', e)
                               
     

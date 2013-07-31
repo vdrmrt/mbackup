@@ -56,6 +56,8 @@ class Cmdline(cmd.Cmd):
                 par['values'] = values
             elif cmd == 'delete':
                 par = {'name': arg.pop(0)}                
+            elif cmd == 'info':
+                par = {'name': arg.pop(0)}
             else:
                 raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:
