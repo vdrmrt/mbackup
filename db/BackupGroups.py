@@ -12,13 +12,15 @@ class BackupGroups:
     def __init__(self):                
         self.connection = db.getConnection();        
     
-    def getByBackupGroupId(self,backup_group_id):        
+    def getByBackupGroupId(self,backup_group_id):
         cursor = self.connection.cursor()
         query = 'SELECT backup_group_id, backup_group_name, backup_group_description, backup_group_destination FROM {t} WHERE {k} = ?'.format(table=self._name,k=self._key)
         cursor.execute(query,(backup_group_id,))
-        res = cursor.fetchone()       
+        res = cursor.fetchone()
         if res:
-            return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])        
+            return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
+        else:
+            raise Exception('Record with id {id} not found'.format(id=id))       
     
     def getByBackupGroupName(self,name):        
         cursor = self.connection.cursor()
@@ -27,6 +29,8 @@ class BackupGroups:
         res = cursor.fetchone()       
         if res:
             return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
+        else:
+            raise Exception('Record with name {name} not found'.format(name=name))
     
     def save(self,bg):
         if not isinstance(bg,BackupGroup):
