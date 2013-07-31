@@ -64,7 +64,7 @@ class BackupGroups:
             self.connection.commit()             
         except sqlite3.Error as e:
             self.connection.rollback()
-            print('Could not delete record', e)
+            raise('Could not delete record', e)
         else:
             return cursor.rowcount
     

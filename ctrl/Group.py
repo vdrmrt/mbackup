@@ -54,6 +54,6 @@ class Group:
             rowcount = self.backup_groups.delete(bg.id)
             print('Deleted {c} record(s)'.format(c=rowcount))
         except Exception as e:
-            print(e)
+            print('An error occurred when deleting record:', e)
                               
     
