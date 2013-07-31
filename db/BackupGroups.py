@@ -79,9 +79,5 @@ class BackupGroups:
         res = []
         for row in cursor.fetchall():
             res.append(row['backup_group_name'])
-        return res
-                    
-def createSchema():
-    schema_filename = 'mbackup_schema.sql'
-    print('Creating schema')
+        return res            
                          
