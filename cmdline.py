@@ -23,7 +23,9 @@ class Cmdline(cmd.Cmd):
         posArg.group.update.groups.add('dest')                
         posArg.group.update.groups.add('expr')
         posArg.group.add('info')
-        posArg.group.info.addFunction('groups','getGroupNames')    
+        posArg.group.info.addFunction('groups','getGroupNames')
+        posArg.group.add('delete')    
+        posArg.group.delete.addFunction('groups','getGroupNames')
         self.posArg = posArg
                 
     def do_group(self,line):        
