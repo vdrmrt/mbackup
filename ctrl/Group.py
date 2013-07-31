@@ -19,11 +19,15 @@ class Group:
         except Exception as e:
             print(e)
         else:
-            bg = BackupGroup(name = name,
-                             description = description,
-                             destination = destination)
-    
-            self.backup_groups.save(bg)
+            try:
+                bg = BackupGroup(name = name,
+                                 description = description,
+                                 destination = destination)    
+                rowcount = self.backup_groups.save(bg)
+                print('Inserted {c} record(s)'.format(c=rowcount))
+                print('Inserted record with id:', bg.id)
+            except Exception as e:    
+                print('An error occurred when inserting record:', e)
         
     def update(self,name = None,values = None):        
         bg = self.backup_groups.getByBackupGroupName(name)        
@@ -34,12 +38,14 @@ class Group:
                 if hasattr(bg,attr):
                     setattr(bg,attr,value)
                 else:
-                    raise Exception('{a} is not a valid field.'.format(a=attr))
-            print(bg.name)           
+                    raise Exception('{a} is not a valid field.'.format(a=attr))            
         except Exception as e:
             print(e)
         else:
-            self.backup_groups.save(bg)
-                
+            try:
+                rowcount = self.backup_groups.save(bg)
+                print('Updated {c} record(s)'.format(c=rowcount))
+            except Exception as e:
+                print('An error occurred when updating record:', e)   
                               
     

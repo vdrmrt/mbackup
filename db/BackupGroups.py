@@ -28,37 +28,36 @@ class BackupGroups:
         if res:
             return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
     
-    def save(self,backup_group):        
-        if backup_group.id:                 
-            query = 'UPDATE {table} SET backup_group_name = ?, backup_group_description = ? ,backup_group_destination = ? WHERE {k} = ?'.format(table=self._name,k=self._key)
-            try:
+    def save(self,bg):
+        if not isinstance(bg,BackupGroup):
+            raise Exception('Provided object is not an BackupGroup instance')
+         
+        try:
+            if bg.id:                 
+                query = 'UPDATE {table} SET backup_group_name = ?, backup_group_description = ? ,backup_group_destination = ? WHERE {k} = ?'.format(table=self._name,k=self._key)
+            
                 cursor = self.connection.cursor()
-                cursor.execute(query,(backup_group.name,
-                                      backup_group.description,
-                                      backup_group.destination,
-                                      backup_group.id))
-                print('Updated {c} record(s)'.format(c=cursor.rowcount))
-                self.connection.commit()               
-            except sqlite3.Error as e:
-                self.connection.rollback()   
-                print('Could not update record', e)
-        else:                   
-            query = 'INSERT INTO {t} (backup_group_name,backup_group_description,backup_group_destination) VALUES (?,?,?)'.format(t=self._name)
-            try:
-               cursor = self.connection.cursor()
-               cursor.execute(query,(backup_group.name,
-                                     backup_group.
-                                     description,
-                                     backup_group.destination))
-               backup_group.backup_group_id = cursor.lastrowid
-               print('Inserted {c} record(s)'.format(c=cursor.rowcount))
-               print('Inserted record rowid:', cursor.lastrowid)
-               self.connection.commit()               
-            except sqlite3.Error as e:
-                print('Could not insert record:', e)
+                cursor.execute(query,(bg.name,
+                                      bg.description,
+                                      bg.destination,
+                                      bg.id))                                                    
+            else:                   
+                query = 'INSERT INTO {t} (backup_group_name,backup_group_description,backup_group_destination) VALUES (?,?,?)'.format(t=self._name)
+                
+                cursor = self.connection.cursor()
+                cursor.execute(query,(bg.name,
+                                      bg.description,
+                                      bg.destination))
+                bg.id = cursor.lastrowid
+        except sqlite3.Error as e:
+            self.connection.rollback()
+            raise e
+        else:
+            self.connection.commit()
+            return cursor.rowcount
 
-    def delete(self,backup_group_id):
-        print('Deleting record:', backup_group_id)         
+    def delete(self,id):
+        print('Deleting record:', id)         
         query = 'DELETE FROM {t} WHERE {k} = ?'.format(table=self._name,k=self._key)
         try:
              cursor = self.connection.cursor()
