@@ -53,7 +53,11 @@ class Cmdline(cmd.Cmd):
                     values = ast.literal_eval(arg.pop(0))
                 else:
                     raise Exception('Field {f} unknown'.format(f=field))              
-                par['values'] = values                                                        
+                par['values'] = values
+            elif cmd == 'delete':
+                par = {'name': arg.pop(0)}                
+            else:
+                raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:
             print('Command  is not defined'.format(cmd=cmd))
         except IndexError as ie:
