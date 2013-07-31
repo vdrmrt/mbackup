@@ -1,6 +1,8 @@
-class BackupGroup:
+from .BaseMod import BaseMod
+
+class BackupGroup(BaseMod):
     def __init__(self,id = None,name = None,description = None,destination = None):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.destination = destination
+        self.set('id',id)
+        self.set('name',name)   
+        self.set('description',description)
+        self.set('destination',destination)
