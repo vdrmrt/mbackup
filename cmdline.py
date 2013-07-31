@@ -36,9 +36,7 @@ class Cmdline(cmd.Cmd):
                  raise Exception('No command specified')      
             
             cmd = arg.pop(0)
-                                   
-            ctrlObj = ctrl.getCtrl('Group')
-            ctrlAction = getattr(ctrlObj,cmd)
+                                               
             if cmd == 'add':                 
                 par = {'name': arg.pop(0), 'description': arg.pop(0),'destination': arg.pop(0) }                     
             elif cmd == 'update':
@@ -72,7 +70,7 @@ class Cmdline(cmd.Cmd):
         except Exception as e:
             print(e)
         else:
-            ctrlAction(**par)
+            ctrl.run('Group',cmd,par)
     
     def complete_group(self,text,line,begidx,endidx):                
         return self.getCompletions('group',line,text)

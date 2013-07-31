@@ -1,12 +1,17 @@
+import config
+from resources import flash
 import db
-from mod.BackupGroup import BackupGroup 
+from mod.BackupGroup import BackupGroup
 
-class Group(object):
+from .BaseCtrl import BaseCtrl
+
+class Group(BaseCtrl):
 
     backup_groups = None
 
     def __init__(self):
         self.backup_groups = db.getDbObj('BackupGroups');
+        self.setView('GroupView')
     
     def add(self,name = None,description = None,destination = None):
         try:            
@@ -39,13 +44,13 @@ class Group(object):
                 else:
                     raise Exception('{a} is not a valid field.'.format(a=attr))            
         except Exception as e:
-            print(e)
+            flash.add('error','An error occurred when updating record: ' + str(e))
         else:
             try:
-                rowcount = self.backup_groups.save(bg)
-                print('Updated {c} record(s)'.format(c=rowcount))
+                rowcount = self.backup_groups.save(bg)                
+                flash.add('notice','Updated {c} record(s)'.format(c=rowcount))    
             except Exception as e:
-                print('An error occurred when updating record:', e)
+                flash.add('error',str(e))                
 
     def delete(self,name):        
         try:
@@ -57,19 +62,20 @@ class Group(object):
             
     def list(self):
         try:
-            l = self.backup_groups.getList()           
+            l = self.backup_groups.getList()
+            pt = PrettyTable(['id','Name','Description','Destination'])
+            pt.align = 'l'
+            pt.align['id'] = 'r'            
             for row in l:
-                print(row['backup_group_id'],row['backup_group_name'],row['backup_group_description'],row['backup_group_destination'])
+                pt.add_row(row)
+            print(pt)
         except Exception as e:
             print('An error occurred when listing records:', e)
-    
+                
     def info(self,name):
         try:
             bg = self.backup_groups.getByBackupGroupName(name)
-            print("Id:",bg.id)
-            print("Name:",bg.name)
-            print("Description:",bg.description)
-            print("Destination:",bg.destination)
+            self.view.bg = bg          
         except Exception as e:
             print('An error getting record:', e)
                               

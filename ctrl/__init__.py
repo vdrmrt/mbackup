@@ -1,5 +1,4 @@
 import importlib
-
 controllers = {}
 
 def getCtrl(name):    
@@ -12,4 +11,12 @@ def getCtrl(name):
     
     return controllers[name]
         
+def run(ctrl,cmd,kargs):
+    
+    ctrlObj = getCtrl(ctrl)
+    getattr(ctrlObj,cmd)(**kargs)
+    
+    ctrlObj.view.showFlash()
+    getattr(ctrlObj.view,'show_' + cmd)()
+    
     

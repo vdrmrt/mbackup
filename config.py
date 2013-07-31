@@ -1,0 +1,1 @@
+viewType = 'text'
