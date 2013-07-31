@@ -14,7 +14,7 @@ class BackupGroups(object):
     
     def getByBackupGroupId(self,backup_group_id):
         cursor = self.connection.cursor()
-        query = 'SELECT backup_group_id, backup_group_name, backup_group_description, backup_group_destination FROM {t} WHERE {k} = ?'.format(table=self._name,k=self._key)
+        query = 'SELECT backup_group_id, backup_group_name, backup_group_description, backup_group_destination FROM {t} WHERE {k} = ?'.format(t=self._name,k=self._key)
         cursor.execute(query,(backup_group_id,))
         res = cursor.fetchone()
         if res:
@@ -38,7 +38,7 @@ class BackupGroups(object):
          
         try:
             if bg.id:                 
-                query = 'UPDATE {table} SET backup_group_name = ?, backup_group_description = ? ,backup_group_destination = ? WHERE {k} = ?'.format(table=self._name,k=self._key)
+                query = 'UPDATE {t} SET backup_group_name = ?, backup_group_description = ? ,backup_group_destination = ? WHERE {k} = ?'.format(t=self._name,k=self._key)
             
                 cursor = self.connection.cursor()
                 cursor.execute(query,(bg.name,
@@ -71,6 +71,12 @@ class BackupGroups(object):
             raise('Could not delete record', e)
         else:
             return cursor.rowcount
+    
+    def getList(self):
+        query = 'SELECT backup_group_id, backup_group_name, backup_group_description, backup_group_destination FROM {t}'.format(t=self._name)
+        cursor = self.connection.cursor() 
+        cursor.execute(query)
+        return cursor.fetchall()                
     
     def getGroupNames(self):    
         query = 'SELECT backup_group_name FROM backup_groups'        

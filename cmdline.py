@@ -26,6 +26,7 @@ class Cmdline(cmd.Cmd):
         posArg.group.info.addFunction('groups','getGroupNames')
         posArg.group.add('delete')    
         posArg.group.delete.addFunction('groups','getGroupNames')
+        posArg.group.add('list')
         self.posArg = posArg
                 
     def do_group(self,line):        
@@ -58,6 +59,8 @@ class Cmdline(cmd.Cmd):
                 par = {'name': arg.pop(0)}                
             elif cmd == 'info':
                 par = {'name': arg.pop(0)}
+            elif cmd == 'list':
+                par = {}
             else:
                 raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:
