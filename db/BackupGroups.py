@@ -2,7 +2,7 @@ import db
 import sqlite3
 from mod.BackupGroup import BackupGroup 
 
-class BackupGroups:
+class BackupGroups(object):
     '''Represents the backup_groups table'''
     
     connection = None

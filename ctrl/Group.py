@@ -1,7 +1,7 @@
 import db
 from mod.BackupGroup import BackupGroup 
 
-class Group:
+class Group(object):
 
     backup_groups = None
 
