@@ -20,10 +20,10 @@ class BackupGroups:
         if res:
             return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])        
     
-    def getByBackupGroupName(self,backup_group_name):        
+    def getByBackupGroupName(self,name):        
         cursor = self.connection.cursor()
         query = 'SELECT backup_group_id, backup_group_name, backup_group_description, backup_group_destination FROM {t} WHERE backup_group_name = ?'.format(t=self._name)
-        cursor.execute(query,(backup_group_name,))
+        cursor.execute(query,(name,))
         res = cursor.fetchone()       
         if res:
             return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
@@ -56,16 +56,17 @@ class BackupGroups:
             self.connection.commit()
             return cursor.rowcount
 
-    def delete(self,id):
-        print('Deleting record:', id)         
-        query = 'DELETE FROM {t} WHERE {k} = ?'.format(table=self._name,k=self._key)
+    def delete(self,id):            
+        query = 'DELETE FROM {t} WHERE {k} = ?'.format(t=self._name,k=self._key)
         try:
-             cursor = self.connection.cursor()
-             cursor.execute(query,(backup_group_id,))                          
-             print('Deleted {c} record(s)'.format(c=cursor.rowcount))
-             self.connection.commit()             
+            cursor = self.connection.cursor()
+            cursor.execute(query,(id,))                                       
+            self.connection.commit()             
         except sqlite3.Error as e:
+            self.connection.rollback()
             print('Could not delete record', e)
+        else:
+            return cursor.rowcount
     
     def getGroupNames(self):    
         query = 'SELECT backup_group_name FROM backup_groups'        

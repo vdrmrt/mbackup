@@ -30,11 +30,11 @@ class Group:
                 print('An error occurred when inserting record:', e)
         
     def update(self,name = None,values = None):        
-        bg = self.backup_groups.getByBackupGroupName(name)        
+        bg = self.backup_groups.getByBackupGroupName(name)    
         try:
             if not bg:
                 raise Exception('Group {g} does not exist.'.format(g=name))                
-            for attr, value in values.items():                             
+            for attr, value in values.items():                         
                 if hasattr(bg,attr):
                     setattr(bg,attr,value)
                 else:
@@ -46,6 +46,14 @@ class Group:
                 rowcount = self.backup_groups.save(bg)
                 print('Updated {c} record(s)'.format(c=rowcount))
             except Exception as e:
-                print('An error occurred when updating record:', e)   
+                print('An error occurred when updating record:', e)
+
+    def delete(self,name):        
+        try:
+            bg = self.backup_groups.getByBackupGroupName(name)
+            rowcount = self.backup_groups.delete(bg.id)
+            print('Deleted {c} record(s)'.format(c=rowcount))
+        except Exception as e:
+            print(e)
                               
     
