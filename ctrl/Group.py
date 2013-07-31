@@ -23,8 +23,7 @@ class Group:
                 bg = BackupGroup(name = name,
                                  description = description,
                                  destination = destination)    
-                rowcount = self.backup_groups.save(bg)
-                print('Inserted {c} record(s)'.format(c=rowcount))
+                rowcount = self.backup_groups.save(bg)           
                 print('Inserted record with id:', bg.id)
             except Exception as e:    
                 print('An error occurred when inserting record:', e)
