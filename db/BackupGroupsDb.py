@@ -1,8 +1,8 @@
 import db
 import sqlite3
-from mod.BackupGroup import BackupGroup 
+from mod.BackupGroupMod import BackupGroupMod 
 
-class BackupGroups(object):
+class BackupGroupsDb(object):
     '''Represents the backup_groups table'''
     
     connection = None
@@ -18,7 +18,7 @@ class BackupGroups(object):
         cursor.execute(query,(backup_group_id,))
         res = cursor.fetchone()
         if res:
-            return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
+            return BackupGroupMod(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
         else:
             raise Exception('Record with id {id} not found'.format(id=id))       
     
@@ -28,13 +28,13 @@ class BackupGroups(object):
         cursor.execute(query,(name,))
         res = cursor.fetchone()       
         if res:
-            return BackupGroup(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
+            return BackupGroupMod(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'])
         else:
             raise Exception('Record with name {name} not found'.format(name=name))
     
     def save(self,bg):
-        if not isinstance(bg,BackupGroup):
-            raise Exception('Provided object is not an BackupGroup instance')
+        if not isinstance(bg,BackupGroupMod):
+            raise Exception('Provided object is not an BackupGroupMod instance')
          
         try:
             if bg.id:                 

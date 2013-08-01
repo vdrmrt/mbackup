@@ -1,13 +1,11 @@
 import config
 from resources import flash
 import db
-from mod.BackupGroup import BackupGroup
+from mod.BackupGroupMod import BackupGroupMod
 
-from .BaseCtrl import BaseCtrl
+from ._BaseCtrl import BaseCtrl
 
-class Group(BaseCtrl):
-
-    backup_groups = None
+class GroupCtrl(BaseCtrl):
 
     def __init__(self):
         self.backup_groups = db.getDbObj('BackupGroups');
@@ -25,9 +23,9 @@ class Group(BaseCtrl):
             print(e)
         else:
             try:
-                bg = BackupGroup(name = name,
-                                 description = description,
-                                 destination = destination)    
+                bg = BackupGroupMod(name = name,
+                                    description = description,
+                                    destination = destination)    
                 rowcount = self.backup_groups.save(bg)           
                 print('Inserted record with id:', bg.id)
             except Exception as e:    

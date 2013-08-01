@@ -27,6 +27,8 @@ class Cmdline(cmd.Cmd):
         posArg.group.add('delete')    
         posArg.group.delete.addFunction('groups','getGroupNames')
         posArg.group.add('list')
+        posArg.add('backup')
+        posArg.backup.add('list')
         self.posArg = posArg
                 
     def do_group(self,line):        
@@ -38,7 +40,7 @@ class Cmdline(cmd.Cmd):
             cmd = arg.pop(0)
                                                
             if cmd == 'add':                 
-                par = {'name': arg.pop(0), 'description': arg.pop(0),'destination': arg.pop(0) }                     
+                par = {'name': arg.pop(0), 'description': arg.pop(0),'destination': arg.pop(0)}                     
             elif cmd == 'update':
                 par = {'name': arg.pop(0)}
                 field = arg.pop(0)
@@ -78,14 +80,51 @@ class Cmdline(cmd.Cmd):
     def help_group(self):
         pass
         
-    def do_backup(self,action):
-        pass
+    def do_backup(self,line):
+        arg = self.parseLine(line)
+        try:
+            if len(arg) == 0:
+                 raise Exception('No command specified')      
+            
+            cmd = arg.pop(0)
+                                               
+            if cmd == 'add':                 
+                par = {'name': arg.pop(0), 'description': arg.pop(0),'destination': arg.pop(0), 'group': arg.pop(0) }                     
+            elif cmd == 'update':
+                par = {'name': arg.pop(0)}
+                field = arg.pop(0)
+                if field == 'name':    
+                    values = {'name': arg.pop(0)}
+                elif field == 'dest':
+                    values = {'destination': arg.pop(0)}
+                elif field == 'desc':
+                    values = {'description': arg.pop(0)}
+                elif field == 'expr':
+                    values = ast.literal_eval(arg.pop(0))
+                else:
+                    raise Exception('Field {f} unknown'.format(f=field))              
+                par['values'] = values
+            elif cmd == 'delete':
+                par = {'name': arg.pop(0)}                
+            elif cmd == 'info':
+                par = {'name': arg.pop(0)}
+            elif cmd == 'list':
+                par = {}
+            else:
+                raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
+        except AttributeError as ae:
+            print('Command  is not defined'.format(cmd=cmd))
+        except IndexError as ie:
+            print('To few arguments for {cmd}'.format(cmd=cmd))
+        except SyntaxError as se:
+            print('Invalid syntax')
+        except Exception as e:
+            print(e)
+        else:
+            ctrl.run('Backup',cmd,par)
     
     def complete_backup(self,text,line,begidx,endidx):
-        args = line.split()
-        args.pop(0)   
-        
-        return self.getCompletions('backup',args,text)
+        return self.getCompletions('backup',line,text)
     
     def help_backup(self):
         pass

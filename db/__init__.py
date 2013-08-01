@@ -23,8 +23,8 @@ def getDbObj(name):
     global dbObjs
         
     if name not in dbObjs:        
-        moduleName = 'db.' + name    
+        moduleName = 'db.' + name + 'Db'
         module = importlib.import_module(moduleName)        
-        dbObjs[name] = getattr(module,name)()    
+        dbObjs[name] = getattr(module,name + 'Db')()    
     
     return dbObjs[name]
