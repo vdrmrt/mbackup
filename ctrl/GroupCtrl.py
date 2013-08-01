@@ -19,17 +19,14 @@ class GroupCtrl(BaseCtrl):
                 raise Exception('Description not provided')
             if not destination:
                 raise Exception('Destination not provided')
-        except Exception as e:
-            print(e)
-        else:
-            try:
-                bg = BackupGroupMod(name = name,
-                                    description = description,
-                                    destination = destination)    
-                rowcount = self.backup_groups.save(bg)           
-                print('Inserted record with id:', bg.id)
-            except Exception as e:    
-                print('An error occurred when inserting record:', e)
+            
+            bg = BackupGroupMod(name = name,
+                                description = description,
+                                destination = destination)    
+            rowcount = self.backup_groups.save(bg)           
+            flash.addNotice('Inserted record with id:', bg.id)
+        except Exception as e:    
+            flash.addError('An error occurred when inserting record:', e)
         
     def update(self,name = None,values = None):        
         bg = self.backup_groups.getByBackupGroupName(name)    
@@ -41,40 +38,30 @@ class GroupCtrl(BaseCtrl):
                     setattr(bg,attr,value)
                 else:
                     raise Exception('{a} is not a valid field.'.format(a=attr))            
+            rowcount = self.backup_groups.save(bg)
+            flash.addNotice('Updated {c} record(s)'.format(c=rowcount))    
         except Exception as e:
-            flash.add('error','An error occurred when updating record: ' + str(e))
-        else:
-            try:
-                rowcount = self.backup_groups.save(bg)                
-                flash.add('notice','Updated {c} record(s)'.format(c=rowcount))    
-            except Exception as e:
-                flash.add('error',str(e))                
+            flash.addError('An error occurred when updating record:',e)               
 
     def delete(self,name):        
         try:
             bg = self.backup_groups.getByBackupGroupName(name)
             rowcount = self.backup_groups.delete(bg.id)
-            print('Deleted {c} record(s)'.format(c=rowcount))
+            flash.addNotice('Deleted {c} record(s)'.format(c=rowcount))
         except Exception as e:
-            print('An error occurred when deleting record:', e)
+            flash.addError('An error occurred when deleting record:', e)
             
     def list(self):
         try:
-            l = self.backup_groups.getList()
-            pt = PrettyTable(['id','Name','Description','Destination'])
-            pt.align = 'l'
-            pt.align['id'] = 'r'            
-            for row in l:
-                pt.add_row(row)
-            print(pt)
+            self.view.backupGroupList = self.backup_groups.getList()
         except Exception as e:
-            print('An error occurred when listing records:', e)
+            flash.addError('An error occurred when listing records:', e)
                 
     def info(self,name):
         try:
             bg = self.backup_groups.getByBackupGroupName(name)
             self.view.bg = bg          
         except Exception as e:
-            print('An error getting record:', e)
+            flash.addError('An error getting record:', e)
                               
     

@@ -17,6 +17,8 @@ def run(ctrl,cmd,kargs):
     getattr(ctrlObj,cmd)(**kargs)
     
     ctrlObj.view.showFlash()
-    getattr(ctrlObj.view,'show_' + cmd)()
+    show = 'show_' + cmd
+    if hasattr(ctrlObj.view,show):
+        getattr(ctrlObj.view,show)()
     
     

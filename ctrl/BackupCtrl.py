@@ -33,10 +33,9 @@ class BackupCtrl(BaseCtrl):
                               destination = destination,
                               group = bg)
                 rowcount = self.backups.save(b)           
-                flash.add('notice','Inserted record with id:' + str(b.id))
+                flash.add('notice','Inserted record with id:',b.id)
             except Exception as e:
-                raise e 
-                flash.add('error','An error occurred when inserting record: ' + str(e))
+                flash.add('error','An error occurred when inserting record:',e)
     
     def list(self):
         try:
