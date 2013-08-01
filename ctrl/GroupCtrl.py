@@ -28,9 +28,9 @@ class GroupCtrl(BaseCtrl):
         except Exception as e:    
             flash.addError('An error occurred when inserting record:', e)
         
-    def update(self,name = None,values = None):        
-        bg = self.backup_groups.getByBackupGroupName(name)    
+    def update(self,name = None,values = None):    
         try:
+            bg = self.backup_groups.getByBackupGroupName(name)
             if not bg:
                 raise Exception('Group {g} does not exist.'.format(g=name))                
             for attr, value in values.items():                         

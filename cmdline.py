@@ -28,10 +28,22 @@ class Cmdline(cmd.Cmd):
         posArg.group.delete.addFunction('groups','getGroupNames')
         posArg.group.add('list')
         posArg.add('backup')
+        posArg.backup.add('add')
+        posArg.backup.add('update')
+        posArg.backup.update.addFunction('backups','getBackupNames')
+        posArg.backup.update.backups.add('name')
+        posArg.backup.update.backups.add('desc')
+        posArg.backup.update.backups.add('dest')
+        posArg.backup.update.backups.add('group')             
+        posArg.backup.update.backups.add('expr')
+        posArg.backup.add('info')
+        posArg.backup.info.addFunction('groups','getBackupNames')
+        posArg.backup.add('delete')    
+        posArg.backup.delete.addFunction('groups','getBackupNames')
         posArg.backup.add('list')
         self.posArg = posArg
                 
-    def do_group(self,line):        
+    def do_group(self,line):
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
@@ -80,7 +92,7 @@ class Cmdline(cmd.Cmd):
     def help_group(self):
         pass
         
-    def do_backup(self,line):
+    def do_backup(self,line):        
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
@@ -99,8 +111,11 @@ class Cmdline(cmd.Cmd):
                     values = {'destination': arg.pop(0)}
                 elif field == 'desc':
                     values = {'description': arg.pop(0)}
+                elif field == 'group':
+                    values = {'group': arg.pop(0)}
                 elif field == 'expr':
                     values = ast.literal_eval(arg.pop(0))
+                    values['group']
                 else:
                     raise Exception('Field {f} unknown'.format(f=field))              
                 par['values'] = values
@@ -177,6 +192,12 @@ class Cmdline(cmd.Cmd):
         except Exception as e:
             print('Error:',e)
         return arg
+    
+    def getBackupNames(self,arg):        
+        if not self.groupNames:            
+            bs = db.getDbObj('Backups');            
+            self.backupNames = bs.getBackupNames();            
+        return self.backupNames
         
     def getGroupNames(self,arg):        
         if not self.groupNames:            

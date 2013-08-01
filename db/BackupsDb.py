@@ -20,8 +20,8 @@ class BackupsDb(object):
         cursor.execute(query,(backup_group_id,))
         res = cursor.fetchone()
         if res:
-            bg = self.backup_groups.getDbObj(res['backup_group_id']);
-            return BackupMod(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'],bg)
+            bg = self.backup_groups.getByBackupGroupId(res['backup_group_id']);
+            return BackupMod(res['backup_id'],res['backup_name'],res['backup_description'],res['backup_destination'],bg)
         else:
             raise Exception('Record with id {id} not found'.format(id=id))       
     
@@ -31,8 +31,8 @@ class BackupsDb(object):
         cursor.execute(query,(name,))
         res = cursor.fetchone()       
         if res:
-             bg = self.backup_groups.getDbObj(res['backup_group_id'])
-             return BackupMod(res['backup_group_id'],res['backup_group_name'],res['backup_group_description'],res['backup_group_destination'],bg)
+             bg = self.backup_groups.getByBackupGroupId(res['backup_group_id'])
+             return BackupMod(res['backup_id'],res['backup_name'],res['backup_description'],res['backup_destination'],bg)
         else:
             raise Exception('Record with name {name} not found'.format(name=name))
     
@@ -91,4 +91,13 @@ class BackupsDb(object):
         cursor = self.connection.cursor() 
         cursor.execute(query)
         return cursor.fetchall()
+    
+    def getBackupNames(self):    
+        query = 'SELECT backup_name FROM {t}'.format(t=self._name)        
+        cursor = self.connection.cursor()        
+        cursor.execute(query)            
+        res = []
+        for row in cursor.fetchall():
+            res.append(row['backup_name'])
+        return res            
                          

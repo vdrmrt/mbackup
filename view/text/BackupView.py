@@ -3,17 +3,16 @@ from view.text.helper.prettytable import PrettyTable
 
 class BackupView(BaseView):
     
-    def show_update(self):
-        pass
-    
-    def show_add(self):
-        pass
-    
     def show_info(self):
-        print("Id:",self.bg.id)
-        print("Name:",self.bg.name)
-        print("Description:",self.bg.description)
-        print("Destination:",self.bg.destination)
+        if hasattr(self,'b'):
+            print("Id:",self.b.id)
+            print("Name:",self.b.name)
+            print("Description:",self.b.description)
+            print("Destination:",self.b.destination)
+            print("Group id:",self.b.group.id)
+            print("Group name:",self.b.group.name)
+            print("Group description:",self.b.group.description)
+            print("Group destination:",self.b.group.destination)
         
     def show_list(self):
         if hasattr(self,'backupList'):
