@@ -13,20 +13,21 @@ class BackupCtrl(BaseCtrl):
         self.backup_groups = db.getDbObj('BackupGroups');
         self.setView('BackupView')
         
-    def add(self,name = None,description = None,destination = None,group = None):
+    def add(self,name = None,description = None,source = None, destination = None,group = None):
         try:            
             if not name:            
                 raise Exception('Name not provided')
             if not description:
                 raise Exception('Description not provided')
-            if not destination:
-                raise Exception('Destination not provided')
+            if not source:
+                raise Exception('Source not provided')
             if not destination:
                 raise Exception('Group not provided')
             
             bg = self.backup_groups.getByBackupGroupName(group)
             b = BackupMod(name = name,
                           description = description,
+                          source = source,
                           destination = destination,
                           group = bg)
             rowcount = self.backups.save(b)           
@@ -52,14 +53,23 @@ class BackupCtrl(BaseCtrl):
             rowcount = self.backups.save(b)
             flash.addNotice('Updated {c} record(s)'.format(c=rowcount))    
         except Exception as e:
-            flash.addError('An error occurred when updating record:',e)               
+            flash.addError('An error occurred when updating record:',e)
+            
+    def delete(self,name):        
+        try:
+            bg = self.backups.getByBackupName(name)
+            rowcount = self.backups.delete(bg.id)
+            flash.addNotice('Deleted {c} record(s)'.format(c=rowcount))
+        except Exception as e:
+            flash.addError('An error occurred when deleting record:', e)         
     
     def info(self,name):
+        b = None
         try:
             b = self.backups.getByBackupName(name)
-            self.view.b = b        
         except Exception as e:
             flash.addError('An error getting record:', e)
+        self.view.b = b
     
     def list(self):
         try:

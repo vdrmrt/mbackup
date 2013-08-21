@@ -16,23 +16,23 @@ class BackupsDb(object):
     
     def getByBackupId(self,id):
         cursor = self.connection.cursor()
-        query = 'SELECT backup_id, backup_group_id,backup_name, backup_description, backup_destination FROM {t} WHERE {k} = ?'.format(t=self._name,k=self._key)
+        query = 'SELECT backup_id, backup_group_id,backup_name, backup_description, backup_source, backup_destination FROM {t} WHERE {k} = ?'.format(t=self._name,k=self._key)
         cursor.execute(query,(backup_group_id,))
         res = cursor.fetchone()
         if res:
             bg = self.backup_groups.getByBackupGroupId(res['backup_group_id']);
-            return BackupMod(res['backup_id'],res['backup_name'],res['backup_description'],res['backup_destination'],bg)
+            return BackupMod(res['backup_id'],res['backup_name'],res['backup_description'],res['backup_source'],res['backup_destination'],bg)
         else:
             raise Exception('Record with id {id} not found'.format(id=id))       
     
     def getByBackupName(self,name):        
         cursor = self.connection.cursor()
-        query = 'SELECT backup_id, backup_group_id,backup_name, backup_description, backup_destination FROM {t} WHERE backup_name = ?'.format(t=self._name)
+        query = 'SELECT backup_id, backup_group_id,backup_name, backup_description, backup_source, backup_destination FROM {t} WHERE backup_name = ?'.format(t=self._name)
         cursor.execute(query,(name,))
         res = cursor.fetchone()       
         if res:
              bg = self.backup_groups.getByBackupGroupId(res['backup_group_id'])
-             return BackupMod(res['backup_id'],res['backup_name'],res['backup_description'],res['backup_destination'],bg)
+             return BackupMod(res['backup_id'],res['backup_name'],res['backup_description'],res['backup_source'],res['backup_destination'],bg)
         else:
             raise Exception('Record with name {name} not found'.format(name=name))
     
@@ -42,21 +42,23 @@ class BackupsDb(object):
          
         try:
             if b.id:                 
-                query = 'UPDATE {t} SET backup_group_id = ?, backup_name = ?, backup_description = ? ,backup_destination = ? WHERE {k} = ?'.format(t=self._name,k=self._key)
+                query = 'UPDATE {t} SET backup_group_id = ?, backup_name = ?, backup_description = ? , backup_source =?, backup_destination = ? WHERE {k} = ?'.format(t=self._name,k=self._key)
             
                 cursor = self.connection.cursor()
                 cursor.execute(query,(b.group.id,
                                       b.name,                                    
                                       b.description,
+                                      b.source,
                                       b.destination,
                                       b.id))                                                    
             else:                   
-                query = 'INSERT INTO {t} (backup_group_id,backup_name,backup_description,backup_destination) VALUES (?,?,?,?)'.format(t=self._name)
+                query = 'INSERT INTO {t} (backup_group_id,backup_name,backup_description,backup_source,backup_destination) VALUES (?,?,?,?,?)'.format(t=self._name)
                 
                 cursor = self.connection.cursor()
                 cursor.execute(query,(b.group.id,
                                       b.name,
-                                      b.description,
+                                      b.description,                                      
+                                      b.source,
                                       b.destination))
                 b.id = cursor.lastrowid
         except sqlite3.Error as e:
@@ -82,6 +84,7 @@ class BackupsDb(object):
         query = '''SELECT {t}.backup_id, 
                           {t}.backup_name,
                           {t}.backup_description,
+                          {t}.backup_source,
                           {t}.backup_destination,
                           backup_groups.backup_group_id,
                           backup_groups.backup_group_name

@@ -33,6 +33,7 @@ class Cmdline(cmd.Cmd):
         posArg.backup.update.addFunction('backups','getBackupNames')
         posArg.backup.update.backups.add('name')
         posArg.backup.update.backups.add('desc')
+        posArg.backup.update.backups.add('src')
         posArg.backup.update.backups.add('dest')
         posArg.backup.update.backups.add('group')             
         posArg.backup.update.backups.add('expr')
@@ -101,12 +102,14 @@ class Cmdline(cmd.Cmd):
             cmd = arg.pop(0)
                                                
             if cmd == 'add':                 
-                par = {'name': arg.pop(0), 'description': arg.pop(0),'destination': arg.pop(0), 'group': arg.pop(0) }                     
+                par = {'name': arg.pop(0), 'description': arg.pop(0),'source': arg.pop(0),'destination': arg.pop(0), 'group': arg.pop(0) }                     
             elif cmd == 'update':
                 par = {'name': arg.pop(0)}
                 field = arg.pop(0)
                 if field == 'name':    
                     values = {'name': arg.pop(0)}
+                elif field == 'src':
+                    values = {'source': arg.pop(0)}
                 elif field == 'dest':
                     values = {'destination': arg.pop(0)}
                 elif field == 'desc':
@@ -115,7 +118,6 @@ class Cmdline(cmd.Cmd):
                     values = {'group': arg.pop(0)}
                 elif field == 'expr':
                     values = ast.literal_eval(arg.pop(0))
-                    values['group']
                 else:
                     raise Exception('Field {f} unknown'.format(f=field))              
                 par['values'] = values
