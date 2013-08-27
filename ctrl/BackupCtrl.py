@@ -77,3 +77,7 @@ class BackupCtrl(BaseCtrl):
             print 
         except Exception as e:
             print('An error occurred when listing records:', e)
+    
+    def run(self,name):
+        b = self.backups.getByBackupName(name)
+        b.run()
