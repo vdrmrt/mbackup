@@ -1,7 +1,6 @@
 from view.text.helper.colorama import init
 from view.text.helper.termcolor import colored
 init()
-from resources import flash 
 
 class BaseView(object):
     

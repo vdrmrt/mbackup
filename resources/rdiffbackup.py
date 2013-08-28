@@ -28,25 +28,32 @@ class Rdiffbackup(object):
                   options = {'StrictHostKeyChecking':'no','UserKnownHostsFile':'/dev/null','PasswordAuthentication':'no'})
         self._remoteSchema = ssh.getCommandStr('%s "rdiff-backup --server"')
     
+        self.setFiltering(True)
+        
         self.proc = None
 
-    def stream_watcher(self,identifier, stream):        
-        for line in stream:            
-            self._io_q.put((identifier, line.decode(sys.stdout.encoding)))           
- 
+    def stream_watcher(self,identifier, stream,filter):        
+        for line in stream:
+            line = line.decode(sys.stdout.encoding)
+            out = filter(identifier,line)
+            if self._filtering == False or out != False:     
+                self._io_q.put((identifier,out))           
+                
         if not stream.closed:            
             stream.close()    
                    
-    def start(self,options):
+    def start(self,options,filterName = None):
         popenOptions = [self._exe,self.getVerbosityString()]
         if hasattr(self,'_host'):
             popenOptions.extend(['--remote-schema',self._remoteSchema])
-        popenOptions.extend(options)        
+        popenOptions.extend(options)
+        
+        filter = getattr(self,'_' + filterName + 'OutputFilter')
         
         self.proc = subprocess.Popen(popenOptions,stdout=subprocess.PIPE,stderr=subprocess.PIPE)  
                 
-        to = Thread(target=self.stream_watcher, name='stdout-watcher',args=('STDOUT', self.proc.stdout)).start()
-        te = Thread(target=self.stream_watcher, name='stderr-watcher',args=('STDERR', self.proc.stderr)).start()                            
+        to = Thread(target=self.stream_watcher, name='stdout-watcher',args=('STDOUT', self.proc.stdout,filter)).start()
+        te = Thread(target=self.stream_watcher, name='stderr-watcher',args=('STDERR', self.proc.stderr,filter)).start()                            
      
     def kill(self):      
         if self.proc is not None and self.proc.poll() is None:
@@ -60,8 +67,16 @@ class Rdiffbackup(object):
             return False
 
     def backup(self):
-        options = [self._source,self.getFullDest()]
-        self.start(options)
+        options = [self._source,self.getFullDest()]        
+        self.start(options,'backup')
+        
+    def _backupOutputFilter(self,identifier,out):
+        outFatal = self._fatalOutputFilter(identifier,out)
+        if outFatal != False:
+            return outFatal
+        if out.startswith("Processing changed file"):
+            return out
+        return False
 
     def restore(self,asof,target):
         tpath = os.path.normpath(target)        
@@ -88,6 +103,13 @@ class Rdiffbackup(object):
     def listIncrements(self):
         options = ['--list-increments',self.getFullDest()]
         self.start(options)
+    
+    def _fatalOutputFilter(self,identifier,out):
+        if out.startswith("Fatal Error:"): 
+            return out
+        if out.startswith("Couldn't start up the remote connection by executing"):
+            return "Couldn't start up the remote connection\n"            
+        return False
     
     def getOutput(self):
          while True:
@@ -142,6 +164,12 @@ class Rdiffbackup(object):
             self._verbosity = v
         else:
             raise Exception('Invalid verbosity level')
+        
+    def setFiltering(self,f):
+        if f:
+            self._filtering = True
+        else:
+            self._filtering = False
     
     def getVerbosityString(self):
         if hasattr(self,'_verbosity'):

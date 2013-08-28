@@ -1,6 +1,5 @@
 from ._BaseMod import BaseMod
 from resources.rdiffbackup import Rdiffbackup
-import queue,sys
 
 class BackupMod(BaseMod):
     def __init__(self,id = None,name = None,description = None,source = None,destination = None,group = None):
@@ -16,18 +15,18 @@ class BackupMod(BaseMod):
     def run(self):
         rdb = self.getRdiffBackup()
         rdb.backup()
-                
-        for out in rdb.getOutput():
-            sys.stdout.write(out) 
-           
-        print('Rdb finished with return code: ',rdb.returncode)
+        
+    def getRunOutput(self):
+        return self.getRdiffBackup().getOutput()
 
+    def getRunReturncode(self):
+        return self.getRdiffBackup().returncode
     
     def getRdiffBackup(self):
         if self._rdiffbackup is None:
             self._rdiffbackup = Rdiffbackup(source = self.source,
                                             user = 'vdrmrt',
-                                            host = 'mvsrv.be',
+                                            host = 'mvsrv.12',
                                             dest = self.destination,
                                             verbosity = 5,
                                             sshKey = 'keys/rdiffbackup',

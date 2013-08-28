@@ -43,7 +43,10 @@ class Cmdline(cmd.Cmd):
         posArg.backup.delete.addFunction('groups','getBackupNames')
         posArg.backup.add('list')
         posArg.backup.add('run')
-        posArg.backup.run.addFunction('backups','getBackupNames')    
+        posArg.backup.run.addFunction('backups','getBackupNames')
+        posArg.backup.add('restore')
+        posArg.backup.run.addFunction('backups','getBackupNames')
+        
         self.posArg = posArg
                 
     def do_group(self,line):
@@ -131,6 +134,8 @@ class Cmdline(cmd.Cmd):
                 par = {}
             elif cmd == 'run':
                 par = {'name': arg.pop(0)}
+            elif cmd == 'restore':
+                par = {'name': arg.pop(0),'destination': arg.pop(0)}                
             else:
                 raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:

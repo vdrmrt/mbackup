@@ -1,5 +1,4 @@
 import config
-from resources import flash
 import db
 from mod.BackupGroupMod import BackupGroupMod
 from mod.BackupMod import BackupMod
@@ -81,3 +80,12 @@ class BackupCtrl(BaseCtrl):
     def run(self,name):
         b = self.backups.getByBackupName(name)
         b.run()
+        self.view.flash('Starting backup.')
+        
+        self.view.run(b.getRunOutput())
+                
+        if b.getRunReturncode() == 0:
+            self.view.flash('Backup finished successfully.')
+        else:
+            self.view.flashError('An error occurred while backing up.')
+           

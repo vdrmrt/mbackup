@@ -1,5 +1,4 @@
 import config
-from resources import flash
 import db
 from mod.BackupGroupMod import BackupGroupMod
 
