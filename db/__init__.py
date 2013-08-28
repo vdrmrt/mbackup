@@ -15,7 +15,6 @@ def getConnection():
     global connection
     if not connection:
         dbFilename = getDbPath()
-        print(dbFilename)
         db_is_new = not os.path.exists(dbFilename)
                 
         with sqlite3.connect(dbFilename) as connection:

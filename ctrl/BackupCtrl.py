@@ -31,9 +31,9 @@ class BackupCtrl(BaseCtrl):
                           destination = destination,
                           group = bg)
             rowcount = self.backups.save(b)           
-            flash.add('notice','Inserted record with id:',b.id)
+            self.view.flash('Inserted record with id:',b.id)
         except Exception as e:
-            flash.add('error','An error occurred when inserting record:',e)
+            self.view.flashError('An error occurred when inserting record:',e)
                 
     def update(self,name = None,values = None):        
         try:
@@ -51,30 +51,30 @@ class BackupCtrl(BaseCtrl):
                 else:
                     raise Exception('{a} is not a valid field.'.format(a=attr))            
             rowcount = self.backups.save(b)
-            flash.addNotice('Updated {c} record(s)'.format(c=rowcount))    
+            self.view.flash('Updated {c} record(s)'.format(c=rowcount))    
         except Exception as e:
-            flash.addError('An error occurred when updating record:',e)
+            self.view.flashError('An error occurred when updating record:',e)
             
     def delete(self,name):        
         try:
             bg = self.backups.getByBackupName(name)
             rowcount = self.backups.delete(bg.id)
-            flash.addNotice('Deleted {c} record(s)'.format(c=rowcount))
+            self.view.flash('Deleted {c} record(s)'.format(c=rowcount))
         except Exception as e:
-            flash.addError('An error occurred when deleting record:', e)         
+            self.view.flashError('An error occurred when deleting record:', e)         
     
     def info(self,name):
         b = None
         try:
             b = self.backups.getByBackupName(name)
         except Exception as e:
-            flash.addError('An error getting record:', e)
-        self.view.b = b
+            self.view.flashError('An error getting record:', e)
+        else:
+            self.view.info(b)        
     
     def list(self):
         try:
-            self.view.backupList = self.backups.getList()
-            print 
+            self.view.list(self.backups.getList())
         except Exception as e:
             print('An error occurred when listing records:', e)
     

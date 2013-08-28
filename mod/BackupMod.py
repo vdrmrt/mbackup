@@ -16,20 +16,10 @@ class BackupMod(BaseMod):
     def run(self):
         rdb = self.getRdiffBackup()
         rdb.backup()
-        
-        oq = rdb.getOutputQueue()
-        while True:
-            try:
-                # Block for 1 second.
-                item = oq.get(True,0.1)
-            except queue.Empty:                
-                # No output in either streams for the specified timeout. Are we done?
-                if rdb.isFinished():
-                    break            
-            else:
-                identifier, line = item
-                sys.stdout.write(identifier + ' ' + line)
-    
+                
+        for out in rdb.getOutput():
+            sys.stdout.write(out) 
+           
         print('Rdb finished with return code: ',rdb.returncode)
 
     
@@ -40,8 +30,8 @@ class BackupMod(BaseMod):
                                             host = 'mvsrv.be',
                                             dest = self.destination,
                                             verbosity = 5,
-                                            sshKey='keys/rdiffbackup',
-                                            sshPort=5555)
+                                            sshKey = 'keys/rdiffbackup',
+                                            sshPort = 5555)
         
         return self._rdiffbackup
             

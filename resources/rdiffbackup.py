@@ -41,7 +41,7 @@ class Rdiffbackup(object):
         popenOptions = [self._exe,self.getVerbosityString()]
         if hasattr(self,'_host'):
             popenOptions.extend(['--remote-schema',self._remoteSchema])
-        popenOptions.extend(options)
+        popenOptions.extend(options)        
         
         self.proc = subprocess.Popen(popenOptions,stdout=subprocess.PIPE,stderr=subprocess.PIPE)  
                 
@@ -89,8 +89,19 @@ class Rdiffbackup(object):
         options = ['--list-increments',self.getFullDest()]
         self.start(options)
     
-    def getOutputQueue(self):
-        return self._io_q
+    def getOutput(self):
+         while True:
+            try:
+                # Block for 1 second.
+                item = self._io_q.get(True,0.1)
+            except queue.Empty:                
+                # No output in either streams for the specified timeout. Are we done?
+                if self.isFinished():
+                    break            
+            else:
+                identifier, line = item
+                yield line
+                
         
     def setSource(self,s):
         spath = os.path.normpath(s)

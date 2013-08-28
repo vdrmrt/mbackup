@@ -12,13 +12,7 @@ def getCtrl(name):
     return controllers[name]
         
 def run(ctrl,cmd,kargs):
-    
     ctrlObj = getCtrl(ctrl)
     getattr(ctrlObj,cmd)(**kargs)
-    
-    ctrlObj.view.showFlash()
-    show = 'show_' + cmd
-    if hasattr(ctrlObj.view,show):
-        getattr(ctrlObj.view,show)()
     
     

@@ -24,9 +24,9 @@ class GroupCtrl(BaseCtrl):
                                 description = description,
                                 destination = destination)    
             rowcount = self.backup_groups.save(bg)           
-            flash.addNotice('Inserted record with id:', bg.id)
+            self.view.flash('Inserted record with id:', bg.id)
         except Exception as e:    
-            flash.addError('An error occurred when inserting record:', e)
+            self.view.flashError('An error occurred when inserting record:', e)
         
     def update(self,name = None,values = None):    
         try:
@@ -39,29 +39,29 @@ class GroupCtrl(BaseCtrl):
                 else:
                     raise Exception('{a} is not a valid field.'.format(a=attr))            
             rowcount = self.backup_groups.save(bg)
-            flash.addNotice('Updated {c} record(s)'.format(c=rowcount))    
+            self.view.flash('Updated {c} record(s)'.format(c=rowcount))    
         except Exception as e:
-            flash.addError('An error occurred when updating record:',e)               
+            self.view.flashError('An error occurred when updating record:',e)               
 
     def delete(self,name):        
         try:
             bg = self.backup_groups.getByBackupGroupName(name)
             rowcount = self.backup_groups.delete(bg.id)
-            flash.addNotice('Deleted {c} record(s)'.format(c=rowcount))
+            self.view.flash('Deleted {c} record(s)'.format(c=rowcount))
         except Exception as e:
-            flash.addError('An error occurred when deleting record:', e)
+            self.view.flashError('An error occurred when deleting record:', e)
             
     def list(self):
         try:
-            self.view.backupGroupList = self.backup_groups.getList()
+            self.view.list(self.backup_groups.getList())
         except Exception as e:
-            flash.addError('An error occurred when listing records:', e)
+            self.view.flashError('An error occurred when listing records:', e)
                 
     def info(self,name):
         try:
             bg = self.backup_groups.getByBackupGroupName(name)
-            self.view.bg = bg          
+            self.view.info(bg)          
         except Exception as e:
-            flash.addError('An error getting record:', e)
+            self.view.flashError('An error getting record:', e)
                               
     
