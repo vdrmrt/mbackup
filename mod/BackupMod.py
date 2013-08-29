@@ -22,6 +22,9 @@ class BackupMod(BaseMod):
     def getRunReturncode(self):
         return self.getRdiffBackup().returncode
     
+    def restore(self,dest,asof = None):
+        return self.getRdiffBackup().restore(dest)
+    
     def listIncrements(self):
         return self.getRdiffBackup().listIncrements()
     

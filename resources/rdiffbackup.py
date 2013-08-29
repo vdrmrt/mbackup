@@ -82,7 +82,7 @@ class Rdiffbackup(object):
             return out
         return False
 
-    def restore(self,asof,target):
+    def restore(self,target,asof = '0B'):        
         tpath = os.path.normpath(target)        
         if not os.path.isabs(tpath):
             raise Exception('Rdiff-backup restore target path {t} is not absolute'.format(t=tpath))
@@ -90,7 +90,15 @@ class Rdiffbackup(object):
             raise Exception('Rdiff-backup restore target path {t} does not exist or is not writable'.format(t=tpath))
         
         options = ['-r',asof.strip(),self.getFullDest(),tpath]
-        self.start(options)
+        self.start(options,'restore')
+        
+    def _restoreOutputFilter(self,identifier,out):
+        outFatal = self._fatalOutputFilter(identifier,out)
+        if outFatal != False:
+            return outFatal
+        if out.startswith("Processing changed file"):
+            return out
+        return False
         
     def remove(self,time):        
         options = ['--force','--remove-older-than',time,self.getFullDest()]

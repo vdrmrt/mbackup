@@ -75,27 +75,48 @@ class BackupCtrl(BaseCtrl):
         try:
             self.view.list(self.backups.getList())
         except Exception as e:
-            print('An error occurred when listing records:', e)
+            self.view.flashError('An error occurred when listing records:', e)
     
     def run(self,name):
-        b = self.backups.getByBackupName(name)
-        b.run()
-        self.view.flash('Starting backup {n}.'.format(n=b.name))
+        try:
+            b = self.backups.getByBackupName(name)
+            b.run()
+            self.view.flash('Starting backup {n}.'.format(n=b.name))
         
-        self.view.displayOutput(b.getRunOutput())
+            self.view.displayOutput(b.getRunOutput())
                 
-        if b.getRunReturncode() == 0:
-            self.view.flash('Backup finished successfully.')
-        else:
-            self.view.flashError('An error occurred while backing up.')
+            if b.getRunReturncode() == 0:
+                self.view.flash('Backup finished successfully.')
+            else:
+                self.view.flashError('An error occurred while backing up.')
+        except Exception as e:
+            self.view.flashError('An error occurred while backing up:', e)
+            
+    def restore(self,name,destination):
+        try:
+            b = self.backups.getByBackupName(name)
+            b.restore(destination)
+            self.view.flash('Starting restore for {n} to {d}'.format(n=b.name,d=destination))
+        
+            self.view.displayOutput(b.getRunOutput())
+        
+            if b.getRunReturncode() == 0:
+                self.view.flash('Restore finished successfully.')
+            else:
+                self.view.flashError('An error occurred while restoring.')
+        except Exception as e:
+            self.view.flashError('An error occurred while restoring backing up:', e)
     
     def listincr(self,name):
-        b = self.backups.getByBackupName(name)
-        b.listIncrements()
-        self.view.flash('Getting increments from server.')
+        try:
+            b = self.backups.getByBackupName(name)
+            b.listIncrements()
+            self.view.flash('Getting increments from server.')
         
-        self.view.displayOutput(b.getRunOutput())
+            self.view.displayOutput(b.getRunOutput())
         
-        if not b.getRunReturncode() == 0:            
-            self.view.flashError('An error occurred while getting increments.')
+            if not b.getRunReturncode() == 0:            
+                self.view.flashError('An error occurred while getting increments.')
+        except Exception as e:
+            self.view.flashError('An error occurred while getting increments:', e)
            
