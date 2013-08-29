@@ -115,7 +115,7 @@ class Rdiffbackup(object):
             try:
                 return datetime.datetime.fromtimestamp(int(out.split(' ', 1)[0])).strftime('%Y-%m-%d %H:%M:%S') + "\n"
             except e:
-                return 'Error on converting date from server'
+                return 'Error converting date format from server'
         return False
         
     
