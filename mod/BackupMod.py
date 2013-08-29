@@ -22,11 +22,14 @@ class BackupMod(BaseMod):
     def getRunReturncode(self):
         return self.getRdiffBackup().returncode
     
+    def listIncrements(self):
+        return self.getRdiffBackup().listIncrements()
+    
     def getRdiffBackup(self):
         if self._rdiffbackup is None:
             self._rdiffbackup = Rdiffbackup(source = self.source,
                                             user = 'vdrmrt',
-                                            host = 'mvsrv.12',
+                                            host = 'mvsrv.be',
                                             dest = self.destination,
                                             verbosity = 5,
                                             sshKey = 'keys/rdiffbackup',

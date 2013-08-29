@@ -80,12 +80,22 @@ class BackupCtrl(BaseCtrl):
     def run(self,name):
         b = self.backups.getByBackupName(name)
         b.run()
-        self.view.flash('Starting backup.')
+        self.view.flash('Starting backup {n}.'.format(n=b.name))
         
-        self.view.run(b.getRunOutput())
+        self.view.displayOutput(b.getRunOutput())
                 
         if b.getRunReturncode() == 0:
             self.view.flash('Backup finished successfully.')
         else:
             self.view.flashError('An error occurred while backing up.')
+    
+    def listincr(self,name):
+        b = self.backups.getByBackupName(name)
+        b.listIncrements()
+        self.view.flash('Getting increments from server.')
+        
+        self.view.displayOutput(b.getRunOutput())
+        
+        if not b.getRunReturncode() == 0:            
+            self.view.flashError('An error occurred while getting increments.')
            

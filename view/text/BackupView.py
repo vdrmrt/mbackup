@@ -24,6 +24,6 @@ class BackupView(BaseView):
             pt.add_row(row)
         print(pt)
         
-    def run(self,output):
+    def displayOutput(self,output):
         for out in output:
             sys.stdout.write(out)

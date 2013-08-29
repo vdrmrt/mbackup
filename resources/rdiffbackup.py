@@ -5,7 +5,7 @@ import sys
 import os
 import re
 import io
-import time
+import time,datetime
 from resources.ssh import Ssh 
       
 class Rdiffbackup(object):
@@ -35,9 +35,10 @@ class Rdiffbackup(object):
     def stream_watcher(self,identifier, stream,filter):        
         for line in stream:
             line = line.decode(sys.stdout.encoding)
-            out = filter(identifier,line)
-            if self._filtering == False or out != False:     
-                self._io_q.put((identifier,out))           
+            if filter is not None and self._filtering == True:        
+                line = filter(identifier,line)
+            if line != False:     
+                self._io_q.put((identifier,line))           
                 
         if not stream.closed:            
             stream.close()    
@@ -48,7 +49,10 @@ class Rdiffbackup(object):
             popenOptions.extend(['--remote-schema',self._remoteSchema])
         popenOptions.extend(options)
         
-        filter = getattr(self,'_' + filterName + 'OutputFilter')
+        if filterName is not None:
+            filter = getattr(self,'_' + filterName + 'OutputFilter')
+        else:
+            filter = None
         
         self.proc = subprocess.Popen(popenOptions,stdout=subprocess.PIPE,stderr=subprocess.PIPE)  
                 
@@ -101,8 +105,19 @@ class Rdiffbackup(object):
         self.start(options)
     
     def listIncrements(self):
-        options = ['--list-increments',self.getFullDest()]
-        self.start(options)
+        options = ['--list-increments','--parsable-output',self.getFullDest()]
+        self.start(options,'listIncrements')
+        
+    def _listIncrementsOutputFilter(self,identifier,out):
+        if identifier == 'STDOUT' and \
+           not out.startswith("Using rdiff-backup version") and \
+           not out.startswith("Executing"):
+            try:
+                return datetime.datetime.fromtimestamp(int(out.split(' ', 1)[0])).strftime('%Y-%m-%d %H:%M:%S') + "\n"
+            except e:
+                return 'Error on converting date from server'
+        return False
+        
     
     def _fatalOutputFilter(self,identifier,out):
         if out.startswith("Fatal Error:"): 

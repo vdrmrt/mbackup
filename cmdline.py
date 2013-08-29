@@ -46,6 +46,8 @@ class Cmdline(cmd.Cmd):
         posArg.backup.run.addFunction('backups','getBackupNames')
         posArg.backup.add('restore')
         posArg.backup.run.addFunction('backups','getBackupNames')
+        posArg.backup.add('listincr')
+        posArg.backup.run.addFunction('backups','getBackupNames')
         
         self.posArg = posArg
                 
@@ -135,7 +137,9 @@ class Cmdline(cmd.Cmd):
             elif cmd == 'run':
                 par = {'name': arg.pop(0)}
             elif cmd == 'restore':
-                par = {'name': arg.pop(0),'destination': arg.pop(0)}                
+                par = {'name': arg.pop(0),'destination': arg.pop(0)}
+            elif cmd == 'listincr':
+                par = {'name': arg.pop(0)}                        
             else:
                 raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:
