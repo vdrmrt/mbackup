@@ -2,7 +2,7 @@ from .BaseView import BaseView
 from view.text.helper.prettytable import PrettyTable
 import sys
 
-class BackupView(BaseView):
+class BackupView(_BaseView):
     
     def info(self,b):
         print("Id:",b.id)

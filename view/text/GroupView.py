@@ -1,7 +1,7 @@
 from .BaseView import BaseView
 from view.text.helper.prettytable import PrettyTable
 
-class GroupView(BaseView):
+class GroupView(_BaseView):
     def info(self,bg):
         print("Id:",bg.id)
         print("Name:",bg.name)
