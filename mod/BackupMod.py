@@ -1,5 +1,6 @@
 from ._BaseMod import BaseMod
 from resources.rdiffbackup import Rdiffbackup
+import config
 
 class BackupMod(BaseMod):
     def __init__(self,id = None,name = None,description = None,source = None,destination = None,group = None):
@@ -32,11 +33,11 @@ class BackupMod(BaseMod):
         if self._rdiffbackup is None:
             self._rdiffbackup = Rdiffbackup(source = self.source,
                                             user = 'vdrmrt',
-                                            host = 'mvsrv.be',
+                                            host = config.get('connection','host'),
                                             dest = self.destination,
                                             verbosity = 5,
                                             sshKey = 'keys/rdiffbackup',
-                                            sshPort = 5555)
+                                            sshPort = config.get('connection','port',22))
         
         return self._rdiffbackup
             
