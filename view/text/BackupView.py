@@ -1,4 +1,4 @@
-from .BaseView import BaseView
+from ._BaseView import _BaseView
 from view.text.helper.prettytable import PrettyTable
 import sys
 

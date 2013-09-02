@@ -3,6 +3,8 @@ import ctrl
 import db
 import shlex
 import ast
+import logging
+
 
 class Cmdline(cmd.Cmd):    
     prompt = 'mbackup> '
@@ -11,6 +13,8 @@ class Cmdline(cmd.Cmd):
         super().__init__()
     
         self.groupNames = None
+        
+        self.logger = logging.getLogger(__name__)
         
         # setup the possible arguments
         posArg = arg('arg')
@@ -55,7 +59,7 @@ class Cmdline(cmd.Cmd):
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
-                 raise Exception('No command specified')      
+                 raise CmdError('No command specified')      
             
             cmd = arg.pop(0)
                                                
@@ -73,7 +77,7 @@ class Cmdline(cmd.Cmd):
                 elif field == 'expr':
                     values = ast.literal_eval(arg.pop(0))
                 else:
-                    raise Exception('Field {f} unknown'.format(f=field))              
+                    raise CmdError('Field {f} unknown'.format(f=field))              
                 par['values'] = values
             elif cmd == 'delete':
                 par = {'name': arg.pop(0)}                
@@ -82,15 +86,17 @@ class Cmdline(cmd.Cmd):
             elif cmd == 'list':
                 par = {}
             else:
-                raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
+                raise CmdError('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:
-            print('Command  is not defined'.format(cmd=cmd))
+            self.logger.warning('Command  is not defined'.format(cmd=cmd))
         except IndexError as ie:
-            print('To few arguments for {cmd}'.format(cmd=cmd))
+            self.logger.warning('To few arguments for {cmd}'.format(cmd=cmd))
+        except CmdError as ce:
+            self.logger.warning(ce)
         except SyntaxError as se:
-            print('Invalid syntax')
+            self.logger.warning('Invalid syntax')
         except Exception as e:
-            print(e)
+            self.logger.error(e)
         else:
             ctrl.run('Group',cmd,par)
     
@@ -104,7 +110,7 @@ class Cmdline(cmd.Cmd):
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
-                 raise Exception('No command specified')      
+                 raise CmdError('No command specified')      
             
             cmd = arg.pop(0)
                                                
@@ -126,7 +132,7 @@ class Cmdline(cmd.Cmd):
                 elif field == 'expr':
                     values = ast.literal_eval(arg.pop(0))
                 else:
-                    raise Exception('Field {f} unknown'.format(f=field))              
+                    raise CmdError('Field {f} unknown'.format(f=field))              
                 par['values'] = values
             elif cmd == 'delete':
                 par = {'name': arg.pop(0)}                
@@ -141,15 +147,17 @@ class Cmdline(cmd.Cmd):
             elif cmd == 'listincr':
                 par = {'name': arg.pop(0)}                        
             else:
-                raise Exception('Command {cmd} not initialized'.format(cmd=cmd))
+                raise CmdError('Command {cmd} not initialized'.format(cmd=cmd))
         except AttributeError as ae:
-            print('Command  is not defined'.format(cmd=cmd))
+            self.logger.warning('Command  is not defined'.format(cmd=cmd))
         except IndexError as ie:
-            print('To few arguments for {cmd}'.format(cmd=cmd))
+            self.logger.warning('To few arguments for {cmd}'.format(cmd=cmd))
         except SyntaxError as se:
-            print('Invalid syntax')
+            self.logger.warning('Invalid syntax')
+        except CmdError as ce:
+            self.logger.warning(ce)
         except Exception as e:
-            print(e)
+            self.logger.error(e)
         else:
             ctrl.run('Backup',cmd,par)
     
@@ -205,7 +213,7 @@ class Cmdline(cmd.Cmd):
         try:
             arg = shlex.split(line)
         except Exception as e:
-            print('Error:',e)
+            self.logger.error(e)
         return arg
     
     def getBackupNames(self,arg):        
@@ -283,3 +291,7 @@ class arg(object):
         for child in self._children.values():
             ret += child.__repr__(level+1)        
         return ret
+    
+class CmdError(Exception):
+    """Base class for exceptions in this module."""
+    pass

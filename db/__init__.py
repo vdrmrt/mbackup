@@ -4,7 +4,7 @@ import importlib
 import config
 
 connection = None
-
+logger = logging.getLogger(__name__)
 dbObjs = {}
 
 def getConnection():
@@ -31,7 +31,7 @@ def getDbObj(name):
     return dbObjs[name]
 
 def createSchema():
-    print('Creating.... need to implement.')
+    logger.info('Creating.... need to implement.')
     
 def getDbPath():
     appdataDir = config.getAppDataDir()

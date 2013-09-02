@@ -2,7 +2,7 @@ from view.text.helper.colorama import init
 from view.text.helper.termcolor import colored
 init()
 
-class BaseView(object):
+class _BaseView(object):
     
     def flash(self,*msg):        
         print(colored(self._prepMsg(msg),'green'))
