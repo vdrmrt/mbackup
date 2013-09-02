@@ -6,7 +6,8 @@ import os
 import re
 import io
 import time,datetime
-from resources.ssh import Ssh 
+import logging
+from resources.ssh import Ssh
       
 class Rdiffbackup(object):
     
@@ -31,10 +32,13 @@ class Rdiffbackup(object):
         self.setFiltering(True)
         
         self.proc = None
+                
+        self.logger = logging.getLogger(__name__)        
 
     def stream_watcher(self,identifier, stream,filter):        
         for line in stream:
             line = line.decode(sys.stdout.encoding)
+            self.logger.debug(identifier + ' ' + line)
             if filter is not None and self._filtering == True:        
                 line = filter(identifier,line)
             if line != False:     

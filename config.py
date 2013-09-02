@@ -29,7 +29,7 @@ def getConfigObj():
         defaultConfigText = """[view]
 type=text
 [connection]
-server=mvsrv.be
+host=mvsrv.be
 port=5555
 """
 
@@ -47,9 +47,14 @@ port=5555
     
 def get(section,key,default = None):
     config = getConfigObj()
+    
     if config is not None:
         if section in config:
-            return config[section].get(key,default)
+            c = config[section].get(key,default)
+            if c is None:
+                raise Exception ('Config key {k} does not exist'.format(k=key))
+            else: 
+                return config[section].get(key,default)
         else:
             raise Exception ('Config section {s} does not exist'.format(s=section))
     else:

@@ -29,7 +29,7 @@ class BackupMod(BaseMod):
     def listIncrements(self):
         return self.getRdiffBackup().listIncrements()
     
-    def getRdiffBackup(self):
+    def getRdiffBackup(self):        
         if self._rdiffbackup is None:
             self._rdiffbackup = Rdiffbackup(source = self.source,
                                             user = 'vdrmrt',

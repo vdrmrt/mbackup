@@ -80,8 +80,8 @@ class BackupCtrl(BaseCtrl):
     def run(self,name):
         try:
             b = self.backups.getByBackupName(name)
-            b.run()
             self.view.flash('Starting backup {n}.'.format(n=b.name))
+            b.run()            
         
             self.view.displayOutput(b.getRunOutput())
                 
@@ -90,7 +90,7 @@ class BackupCtrl(BaseCtrl):
             else:
                 self.view.flashError('An error occurred while backing up.')
         except Exception as e:
-            self.view.flashError('An error occurred while backing up:', e)
+            self.view.flashError('An error occurred while backing up:', e)            
             
     def restore(self,name,destination):
         try:

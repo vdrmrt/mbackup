@@ -2,6 +2,7 @@ import os
 import sqlite3
 import importlib
 import config
+import logging
 
 connection = None
 logger = logging.getLogger(__name__)
