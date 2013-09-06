@@ -50,9 +50,9 @@ class Cmdline(cmd.Cmd):
         posArg.backup.add('run')
         posArg.backup.run.addFunction('backups','getBackupNames')
         posArg.backup.add('restore')
-        posArg.backup.run.addFunction('backups','getBackupNames')
+        posArg.backup.restore.addFunction('backups','getBackupNames')
         posArg.backup.add('listincr')
-        posArg.backup.run.addFunction('backups','getBackupNames')
+        posArg.backup.listincr.addFunction('backups','getBackupNames')
         
         posArg.add('settings')
         posArg.settings.add('loglevel')
