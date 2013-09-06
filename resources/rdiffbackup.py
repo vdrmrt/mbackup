@@ -37,7 +37,7 @@ class Rdiffbackup(object):
 
     def stream_watcher(self,identifier, stream,filter):        
         for line in stream:
-            line = line.decode(sys.stdout.encoding)
+            line = line.decode(sys.stdout.encoding).strip()
             self.logger.debug(identifier + ' ' + line)
             if filter is not None and self._filtering == True:        
                 line = filter(identifier,line)

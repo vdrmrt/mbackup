@@ -1,6 +1,5 @@
 from ._BaseView import _BaseView
 from view.text.helper.prettytable import PrettyTable
-import sys
 
 class BackupView(_BaseView):
     
@@ -26,4 +25,4 @@ class BackupView(_BaseView):
         
     def displayOutput(self,output):
         for out in output:
-            sys.stdout.write(out)
+           print(out)

@@ -31,6 +31,7 @@ class Cmdline(cmd.Cmd):
         posArg.group.add('delete')    
         posArg.group.delete.addFunction('groups','getGroupNames')
         posArg.group.add('list')
+        
         posArg.add('backup')
         posArg.backup.add('add')
         posArg.backup.add('update')
@@ -52,6 +53,9 @@ class Cmdline(cmd.Cmd):
         posArg.backup.run.addFunction('backups','getBackupNames')
         posArg.backup.add('listincr')
         posArg.backup.run.addFunction('backups','getBackupNames')
+        
+        posArg.add('settings')
+        posArg.settings.add('loglevel')
         
         self.posArg = posArg
                 
@@ -166,6 +170,41 @@ class Cmdline(cmd.Cmd):
     
     def help_backup(self):
         pass
+        
+        
+        
+    def do_settings(self,line):        
+        arg = self.parseLine(line)
+        try:
+            if len(arg) == 0:
+                 raise CmdError('No command specified')      
+            
+            cmd = arg.pop(0)
+                                               
+            if cmd == 'loglevel':                 
+                par = {'level': arg.pop(0)}                     
+            else:
+                raise CmdError('Command {cmd} not initialized'.format(cmd=cmd))
+        except AttributeError as ae:
+            self.logger.warning('Command  is not defined'.format(cmd=cmd))
+        except IndexError as ie:
+            self.logger.warning('To few arguments for {cmd}'.format(cmd=cmd))
+        except SyntaxError as se:
+            self.logger.warning('Invalid syntax')
+        except CmdError as ce:
+            self.logger.warning(ce)
+        except Exception as e:
+            self.logger.error(e)
+        else:
+            ctrl.run('Settings',cmd,par)
+    
+    def complete_settings(self,text,line,begidx,endidx):
+        return self.getCompletions('settings',line,text)
+    
+    def help_settings(self):
+        pass
+        
+        
         
     def getCompletions(self,cmd,line,text):
         # text from line, because last argument is not completed
