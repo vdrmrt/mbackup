@@ -30,13 +30,13 @@ class BackupMod(BaseMod):
         return self.getRdiffBackup().listIncrements()
     
     def getRdiffBackup(self):        
-        if self._rdiffbackup is None:
+        if self._rdiffbackup is None:            
             self._rdiffbackup = Rdiffbackup(source = self.source,
-                                            user = 'vdrmrt',
+                                            user = config.get('connection','user'),
                                             host = config.get('connection','host'),
                                             dest = self.destination,
                                             verbosity = 5,
-                                            sshKey = 'keys/rdiffbackup',
+                                            sshKey = config.get('connection','key'),
                                             sshPort = config.get('connection','port',22))
         
         return self._rdiffbackup

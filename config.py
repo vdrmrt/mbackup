@@ -31,6 +31,8 @@ type=text
 [connection]
 host=mvsrv.be
 port=5555
+user=test1
+key=C:\\Users\\vdrmrt\\AppData\\Local\\mbackup\\keys\\test1
 """
 
         if not os.path.isfile(configPath):

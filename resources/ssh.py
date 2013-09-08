@@ -49,7 +49,7 @@ class Ssh(object):
             
     def getPortString(self):
         if hasattr(self,'_port'):
-            return '-p 5555'
+            return '-p ' + str(self._port)
         return ''
         
     def setKey(self,k):
