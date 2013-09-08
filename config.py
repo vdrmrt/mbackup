@@ -1,6 +1,6 @@
 import configparser
 import ctypes.wintypes
-import os
+import os,sys
 
 CSIDL_PERSONAL= 5        # My Documents
 CSIDL_LOCAL_APPDATA = 28 # Applicaiton Data (non roaming)
@@ -59,3 +59,9 @@ def get(section,key,default = None):
             raise Exception ('Config section {s} does not exist'.format(s=section))
     else:
         raise Exception ('Unable to get config')
+    
+def getCurrentDir():
+    if hasattr(sys, "frozen"):
+        return os.path.dirname(os.path.realpath(sys.executable))
+    else:
+        return os.path.dirname(os.path.realpath(sys.argv[0]))

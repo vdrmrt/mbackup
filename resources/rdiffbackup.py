@@ -207,7 +207,6 @@ class Rdiffbackup(object):
             if hasattr(sys, "frozen"):
                 self._path =  os.path.dirname(os.path.realpath(sys.executable))
             else:
-                #self._path = os.path.dirname(os.path.realpath(__file__))
                 self._path = os.path.dirname(os.path.realpath(sys.argv[0]))
         return self._path
    
