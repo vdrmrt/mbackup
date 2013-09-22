@@ -7,7 +7,7 @@ import logging
 connection = None
 logger = logging.getLogger(__name__)
 dbObjs = {}
-dbVersion = '1.0.0'
+dbVersion = '0.0.1'
 
 
 def getConnection():
@@ -27,6 +27,8 @@ def getConnection():
                 logger.info('Current database version: {v}'.format(v=version))
                 if dbVersion != version:
                     raise Exception('Database versions do not match.')
+                else:
+                    logger.info('DB versions match')
             except Exception as e:
                 raise
                 

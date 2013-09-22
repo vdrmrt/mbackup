@@ -1,3 +1,4 @@
+
 -- Table: backup_groups
 CREATE TABLE backup_groups ( 
     backup_group_id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -6,12 +7,6 @@ CREATE TABLE backup_groups (
     backup_group_destination TEXT    NOT NULL 
 );
 
--- Table: backup_history
-CREATE TABLE backup_history ( 
-    backup_history_id        INTEGER  PRIMARY KEY
-                                      NOT NULL,
-    backup_history_timestamp DATETIME 
-);
 
 -- Table: backups
 CREATE TABLE backups ( 
@@ -26,9 +21,23 @@ CREATE TABLE backups (
     backup_description TEXT    NOT NULL 
 );
 
+
 -- Table: versions
 CREATE TABLE versions ( 
-    version_release_number VARCHAR PRIMARY KEY 
+    version_release_number VARCHAR PRIMARY KEY,
+    changelog              TEXT 
 );
 
-INSERT INTO [versions] ([version_release_number]) VALUES ('1.0.0');
+INSERT INTO [versions] ([version_release_number], [changelog]) VALUES ('0.0.1', 'First version');
+
+-- Table: backup_history
+CREATE TABLE backup_history ( 
+    backup_history_id        INTEGER  PRIMARY KEY
+                                      NOT NULL,
+    back_up_id               INT      NOT NULL
+                                      REFERENCES backups ( backup_id ) ON DELETE CASCADE
+                                                                       ON UPDATE CASCADE,
+    backup_history_timestamp DATETIME NOT NULL,
+    backup_history_log       TEXT 
+);
+
