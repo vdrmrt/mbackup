@@ -22,14 +22,6 @@ CREATE TABLE backups (
 );
 
 
--- Table: versions
-CREATE TABLE versions ( 
-    version_release_number VARCHAR PRIMARY KEY,
-    changelog              TEXT 
-);
-
-INSERT INTO [versions] ([version_release_number], [changelog]) VALUES ('0.0.1', 'First version');
-
 -- Table: backup_history
 CREATE TABLE backup_history ( 
     backup_history_id        INTEGER  PRIMARY KEY
@@ -41,3 +33,23 @@ CREATE TABLE backup_history (
     backup_history_log       TEXT 
 );
 
+
+-- Table: settings
+CREATE TABLE settings ( 
+    setting_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    setting_name  TEXT    NOT NULL,
+    setting_value TEXT    NOT NULL 
+);
+
+
+-- Table: versions
+CREATE TABLE versions ( 
+    version_id       INTEGER PRIMARY KEY AUTOINCREMENT
+                             UNIQUE,
+    version_major    INTEGER NOT NULL,
+    version_minor    INTEGER NOT NULL,
+    version_revision INTEGER NOT NULL,
+    changelog        TEXT 
+);
+
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (1, 0, 0, 1, null);
