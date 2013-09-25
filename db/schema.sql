@@ -52,4 +52,6 @@ CREATE TABLE versions (
     changelog        TEXT 
 );
 
-INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (1, 0, 0, 1, null);
+INSERT INTO [versions] ([version_major], [version_minor], [version_revision], [changelog]) VALUES (0, 0, 1, null);
+INSERT INTO versions (version_major,version_minor,version_revision,changelog) 
+VALUES (0,0,2,'Added settings table');

@@ -4,5 +4,5 @@ CREATE TABLE settings (
     setting_value TEXT    NOT NULL 
 );
 
-INSERT INTO versions (version_release_number,changelog) 
-VALUES ('0.0.2','Added settings table');
+INSERT INTO versions (version_major,version_minor,version_revision,changelog) 
+VALUES (0,0,2,'Added settings table');

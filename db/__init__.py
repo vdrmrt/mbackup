@@ -7,7 +7,7 @@ import logging
 connection = None
 logger = logging.getLogger(__name__)
 dbObjs = {}
-dbVersion = (0,0,2)
+appDbVersion = (0,0,2)
 
 
 def getConnection():
@@ -21,20 +21,20 @@ def getConnection():
                 createSchema();
             connection.row_factory = sqlite3.Row
             try:
-                cursor = connection.cursor()
-                cursor.execute("SELECT version_major,version_minor,version_revision FROM versions WHERE (version_major || '.' || version_minor || '.' || version_revision)  = (SELECT max(version_major || '.' || version_minor || '.' || version_revision) FROM versions)")                
-                version = tuple(cursor.fetchone())
-                logger.info('Current database version: {ma}.{mi}.{re}'.format(ma=version[0],mi=version[1],re=version[2]))
-                if dbVersion != version:
-                    logger.info("Database version don't match trying to upgrade")
-                    try:
-                        raise Exception('Database versions do not match.')
-                    except:
-                        raise
-                    else:
-                        logger.info('Successfully upgraded database')
+                dbVersion = getCurrentDbVersion(connection)
+                logger.info('Current database version: {v}'.format(v=formatDbVersion(dbVersion)))
+                if appDbVersion != dbVersion:
+                    logger.info('Application needs version: {v}'.format(v=formatDbVersion(appDbVersion)))                    
+                    try:               
+                        newDbVersion = upgradeDb(appDbVersion,dbVersion,connection)                                                
+                    except Exception as e:                        
+                        raise Exception('An error occurred while upgrading db: ',e)
+                    else:                    
+                        logger.info('Upgraded database, current db Version: {v}'.format(v=formatDbVersion(newDbVersion)))
+                        if appDbVersion != newDbVersion:
+                            raise Exception('Unable to upgrade to requested version, were are missing some changescripts or something is wrong in the changescripts')
                 else:
-                    logger.info('DB versions match')
+                    logger.info('DB version check ok.')
             except Exception as e:
                 raise
                 
@@ -65,6 +65,43 @@ def createSchema():
         getConnection().cursor().executescript(schema)
         getConnection().commit()     
         
+def upgradeDb(appDbVersion,dbVersion,connection):
+    logger.info("Database dbVersion don't match trying to upgrade")
+    try:
+        import glob
+        
+        changeScripts = []
+        for name in glob.glob(config.getCurrentDir() + '/db/changescripts/mbackup-*.*.*-*.*.*.sql'):
+            fullpath = (os.path.abspath(name))
+            file = os.path.splitext(os.path.basename(fullpath))[0] #get the file name with extension
+            spl = file.split('-')
+            fromV = tuple(map(int,spl[1].split('.')))
+            toV = tuple(map(int,spl[2].split('.')))
+            if fromV >= dbVersion and toV <= appDbVersion:                    
+                changeScripts.append((fromV,toV,fullpath))                        
+        changeScripts = sorted(changeScripts, key=lambda tup: tup[0])
+        sql = ""
+        for changeScript in changeScripts:
+            with open (changeScript[2], "r") as sqlfile:
+                sql += "-- From {f} to {t}".format(f=formatDbVersion(changeScript[0]),t=formatDbVersion(changeScript[1])) + "\n" + sqlfile.read() + "\n\n"
+        logger.debug("Sql changescript:\n {s}".format(s=sql))
+        connection.cursor().executescript(sql)
+        connection.commit()                    
+    except sqlite3.Error as e:        
+        raise
+    else:        
+        return getCurrentDbVersion(connection)
+    
+def getCurrentDbVersion(connection):
+    try:
+        cursor = connection.cursor()         
+        cursor.execute("SELECT version_major,version_minor,version_revision FROM versions WHERE (version_major || '.' || version_minor || '.' || version_revision)  = (SELECT max(version_major || '.' || version_minor || '.' || version_revision) FROM versions)")                
+        return tuple(cursor.fetchone())
+    except sqlite3.Error as e:
+        raise
+
+def formatDbVersion(v):
+    return '{ma}.{mi}.{re}'.format(ma=v[0],mi=v[1],re=v[2])
     
 def getDbPath():
     appdataDir = config.getAppDataDir()
