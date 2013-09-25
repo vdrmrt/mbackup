@@ -34,14 +34,6 @@ CREATE TABLE backup_history (
 );
 
 
--- Table: settings
-CREATE TABLE settings ( 
-    setting_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    setting_name  TEXT    NOT NULL,
-    setting_value TEXT    NOT NULL 
-);
-
-
 -- Table: versions
 CREATE TABLE versions ( 
     version_id       INTEGER PRIMARY KEY AUTOINCREMENT
@@ -52,6 +44,18 @@ CREATE TABLE versions (
     changelog        TEXT 
 );
 
-INSERT INTO [versions] ([version_major], [version_minor], [version_revision], [changelog]) VALUES (0, 0, 1, null);
-INSERT INTO versions (version_major,version_minor,version_revision,changelog) 
-VALUES (0,0,2,'Added settings table');
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (1, 0, 0, 1, null);
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (2, 0, 0, 2, 'Added settings table');
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (3, 0, 0, 3, 'Added section column to settings table');
+
+-- Table: settings
+CREATE TABLE settings ( 
+    setting_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    setting_section TEXT    NOT NULL,
+    setting_name    TEXT    NOT NULL,
+    setting_value   TEXT    NOT NULL,
+    UNIQUE ( setting_section, setting_name ) 
+);
+
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (1, 'connection', 'host', 'rsync.mvsrv.be');
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (2, 'connection', 'port', 1503);

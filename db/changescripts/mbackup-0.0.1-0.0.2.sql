@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE settings ( 
     setting_id    INTEGER PRIMARY KEY AUTOINCREMENT,
     setting_name  TEXT    NOT NULL,

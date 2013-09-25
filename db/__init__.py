@@ -7,7 +7,7 @@ import logging
 connection = None
 logger = logging.getLogger(__name__)
 dbObjs = {}
-appDbVersion = (0,0,2)
+appDbVersion = (0,0,3)
 
 
 def getConnection():
