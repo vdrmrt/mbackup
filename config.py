@@ -1,4 +1,4 @@
-import configparser
+import db
 import ctypes.wintypes
 import os,sys
 
@@ -20,50 +20,22 @@ def getAppDataDir():
 
 configDir = getAppDataDir() + "\mbackup\config"
 os.makedirs(configDir,exist_ok=True)
-
-def getConfigObj():
-    global config
-    if config is None:
-        configPath = configDir + "\config.ini"
-
-        defaultConfigText = """[view]
-type=text
-[connection]
-host=mvsrv.be
-port=5555
-user=test1
-key=C:\\Users\\vdrmrt\\AppData\\Local\\mbackup\\keys\\test1
-"""
-
-        if not os.path.isfile(configPath):
-            try:
-                with open(configPath,'w') as f:
-                    f.write(defaultConfigText)
-            except Exception as e:
-                raise Exception('Error while creating config file:',e)
-            
-        config = configparser.ConfigParser()
-        config.read(configPath)
-
-    return config
-    
-def get(section,key,default = None):
-    config = getConfigObj()
-    
-    if config is not None:
-        if section in config:
-            c = config[section].get(key,default)
-            if c is None:
-                raise Exception ('Config key {k} does not exist'.format(k=key))
-            else: 
-                return config[section].get(key,default)
-        else:
-            raise Exception ('Config section {s} does not exist'.format(s=section))
-    else:
-        raise Exception ('Unable to get config')
     
 def getCurrentDir():
     if hasattr(sys, "frozen"):
         return os.path.dirname(os.path.realpath(sys.executable))
     else:
         return os.path.dirname(os.path.realpath(sys.argv[0]))
+    
+def getSetting(section,name,default = None):
+    settings = db.getDbObj('Settings');
+    
+    s = settings.getBySettingSectionAndName(section,name)
+    
+    if not s:
+        if default == None:
+            raise Exception('Setting with section "{s}" and name "{n}" not found'.format(s=section,n=name))
+        else:
+            return default
+    else:
+        return s['setting_value']
