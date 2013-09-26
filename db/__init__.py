@@ -80,16 +80,17 @@ def upgradeDb(appDbVersion,dbVersion,connection):
             if fromV >= dbVersion and toV <= appDbVersion:                    
                 changeScripts.append((fromV,toV,fullpath))                        
         changeScripts = sorted(changeScripts, key=lambda tup: tup[0])
-        sql = ""
+        sql = "BEGIN TRANSACTION; \n"
         for changeScript in changeScripts:
             with open (changeScript[2], "r") as sqlfile:
                 sql += "-- From {f} to {t}".format(f=formatDbVersion(changeScript[0]),t=formatDbVersion(changeScript[1])) + "\n" + sqlfile.read() + "\n\n"
         logger.debug("Sql changescript:\n {s}".format(s=sql))
-        connection.cursor().executescript(sql)
-        connection.commit()                    
-    except sqlite3.Error as e:        
-        raise
-    else:        
+        connection.cursor().executescript(sql)        
+    except sqlite3.Error as e:
+        connection.rollback()
+        raise        
+    else:
+        connection.commit()
         return getCurrentDbVersion(connection)
     
 def getCurrentDbVersion(connection):

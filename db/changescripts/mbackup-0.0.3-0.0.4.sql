@@ -1,5 +1,3 @@
-BEGIN;
-
 ALTER TABLE versions RENAME TO versions_old;
 
 -- Table: versions

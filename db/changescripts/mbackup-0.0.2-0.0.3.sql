@@ -1,5 +1,3 @@
-BEGIN;
-
 ALTER TABLE settings RENAME TO settings_old;
 
 -- Table: settings
