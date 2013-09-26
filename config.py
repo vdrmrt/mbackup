@@ -30,8 +30,7 @@ def getCurrentDir():
 def getSetting(section,name,default = None):
     settings = db.getDbObj('Settings');
     
-    s = settings.getBySettingSectionAndName(section,name)
-    
+    s = settings.getBySettingSectionAndName(section,name)    
     if not s:
         if default == None:
             raise Exception('Setting with section "{s}" and name "{n}" not found'.format(s=section,n=name))

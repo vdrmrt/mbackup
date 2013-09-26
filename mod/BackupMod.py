@@ -10,9 +10,7 @@ class BackupMod(BaseMod):
         self.set('source',source)
         self.set('destination',destination)
         self.set('group',group)
-        
-        self.set('_rdiffbackup',None)
-        
+                
     def run(self):
         rdb = self.getRdiffBackup()
         rdb.backup()
@@ -30,15 +28,24 @@ class BackupMod(BaseMod):
         return self.getRdiffBackup().listIncrements()
     
     def getRdiffBackup(self):        
-        if self._rdiffbackup is None:            
-            self._rdiffbackup = Rdiffbackup(source = self.source,
-                                            user = config.getSetting('connection','user'),
-                                            host = config.getSetting('connection','host'),
-                                            dest = self.destination,
-                                            verbosity = 5,
-                                            sshKey = config.getSetting('connection','key'),
-                                            sshPort = config.getSetting('connection','port',22))
+        user = config.getSetting('connection','user')
+        if user == None or user.strip() == '':
+            raise Exception('User setting is empty')        
+        host = config.getSetting('connection','host')
+        if host == None or host.strip() == '':
+            raise Exception('Host setting is empty')        
+        port = config.getSetting('connection','port')
+        if port == None or port.strip() == '':
+            raise Exception('port setting is empty')
+                    
+        rdb = Rdiffbackup(source = self.source,
+                          user = user,
+                          host = host,
+                          dest = self.destination,
+                          verbosity = 5,
+                          sshKey = config.getKeyPath(),
+                          sshPort = port)
         
-        return self._rdiffbackup
+        return rdb
             
             
