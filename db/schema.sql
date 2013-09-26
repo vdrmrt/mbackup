@@ -34,20 +34,6 @@ CREATE TABLE backup_history (
 );
 
 
--- Table: settings
-CREATE TABLE settings ( 
-    setting_id      INTEGER PRIMARY KEY AUTOINCREMENT,
-    setting_section TEXT    NOT NULL,
-    setting_name    TEXT    NOT NULL,
-    setting_value   TEXT    NOT NULL,
-    UNIQUE ( setting_section, setting_name ) 
-);
-
-INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (1, 'connection', 'host', 'rsync.mvsrv.be');
-INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (2, 'connection', 'port', 1503);
-INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (3, 'application', 'loglevel', 'INFO');
-INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (4, 'view', 'type', 'text');
-
 -- Table: versions
 CREATE TABLE versions ( 
     version_id       INTEGER PRIMARY KEY AUTOINCREMENT
@@ -64,3 +50,20 @@ INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version
 INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (3, 0, 0, 3, 'Added section column to settings table');
 INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (4, 0, 0, 4, 'Added loglevel record in settings table and unique key to versions table');
 INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (5, 0, 0, 5, 'Added view type record in settings table');
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (6, 0, 0, 6, 'Changed not null constraint on setting_value and added user and key settings');
+
+-- Table: settings
+CREATE TABLE settings ( 
+    setting_id      INTEGER PRIMARY KEY AUTOINCREMENT,
+    setting_section TEXT    NOT NULL,
+    setting_name    TEXT    NOT NULL,
+    setting_value   TEXT,
+    UNIQUE ( setting_section, setting_name ) 
+);
+
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (1, 'connection', 'host', 'rsync.mvsrv.be');
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (2, 'connection', 'port', 1503);
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (3, 'application', 'loglevel', 'INFO');
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (4, 'view', 'type', 'text');
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (5, 'connection', 'user', null);
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (6, 'connection', 'key', null);
