@@ -65,6 +65,8 @@ class Cmdline(cmd.Cmd):
         posArg.settings.add('connection')
         posArg.settings.connection.add('host')
         posArg.settings.connection.add('port')
+        posArg.settings.connection.add('user')
+        posArg.settings.connection.add('key')
         
         self.posArg = posArg
                 
