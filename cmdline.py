@@ -55,7 +55,16 @@ class Cmdline(cmd.Cmd):
         posArg.backup.listincr.addFunction('backups','getBackupNames')
         
         posArg.add('settings')
-        posArg.settings.add('loglevel')
+        posArg.settings.add('application')
+        posArg.settings.application.add('loglevel')
+        posArg.settings.application.loglevel.add('DEBUG')
+        posArg.settings.application.loglevel.add('INFO')
+        posArg.settings.application.loglevel.add('WARNING')
+        posArg.settings.application.loglevel.add('ERROR')
+        posArg.settings.application.loglevel.add('CRITICAL')
+        posArg.settings.add('connection')
+        posArg.settings.connection.add('host')
+        posArg.settings.connection.add('port')
         
         self.posArg = posArg
                 
@@ -177,16 +186,16 @@ class Cmdline(cmd.Cmd):
         arg = self.parseLine(line)
         try:
             if len(arg) == 0:
-                 raise CmdError('No command specified')      
+                 raise CmdError('No section specified')      
+            if len(arg) <= 1:
+                 raise CmdError('No setting specified')
+            if len(arg) <= 2:
+                 raise CmdError('No setting value specified')
             
-            cmd = arg.pop(0)
-                                               
-            if cmd == 'loglevel':                 
-                par = {'level': arg.pop(0)}                     
-            else:
-                raise CmdError('Command {cmd} not initialized'.format(cmd=cmd))
+            par = {'section': arg.pop(0),'name': arg.pop(0),'value': arg.pop(0)}
+            
         except AttributeError as ae:
-            self.logger.warning('Command  is not defined'.format(cmd=cmd))
+            self.logger.warning('Command is not defined'.format(cmd=cmd))
         except IndexError as ie:
             self.logger.warning('To few arguments for {cmd}'.format(cmd=cmd))
         except SyntaxError as se:
@@ -196,15 +205,13 @@ class Cmdline(cmd.Cmd):
         except Exception as e:
             self.logger.error(e)
         else:
-            ctrl.run('Settings',cmd,par)
+            ctrl.run('Settings','set',par)
     
     def complete_settings(self,text,line,begidx,endidx):
         return self.getCompletions('settings',line,text)
     
     def help_settings(self):
         pass
-        
-        
         
     def getCompletions(self,cmd,line,text):
         # text from line, because last argument is not completed

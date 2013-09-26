@@ -34,20 +34,6 @@ CREATE TABLE backup_history (
 );
 
 
--- Table: versions
-CREATE TABLE versions ( 
-    version_id       INTEGER PRIMARY KEY AUTOINCREMENT
-                             UNIQUE,
-    version_major    INTEGER NOT NULL,
-    version_minor    INTEGER NOT NULL,
-    version_revision INTEGER NOT NULL,
-    changelog        TEXT 
-);
-
-INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (1, 0, 0, 1, null);
-INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (2, 0, 0, 2, 'Added settings table');
-INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (3, 0, 0, 3, 'Added section column to settings table');
-
 -- Table: settings
 CREATE TABLE settings ( 
     setting_id      INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,3 +45,20 @@ CREATE TABLE settings (
 
 INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (1, 'connection', 'host', 'rsync.mvsrv.be');
 INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (2, 'connection', 'port', 1503);
+INSERT INTO [settings] ([setting_id], [setting_section], [setting_name], [setting_value]) VALUES (3, 'application', 'loglevel', 'INFO');
+
+-- Table: versions
+CREATE TABLE versions ( 
+    version_id       INTEGER PRIMARY KEY AUTOINCREMENT
+                             UNIQUE,
+    version_major    INTEGER NOT NULL,
+    version_minor    INTEGER NOT NULL,
+    version_revision INTEGER NOT NULL,
+    changelog        TEXT,
+    UNIQUE ( version_major, version_minor, version_revision ) 
+);
+
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (1, 0, 0, 1, null);
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (2, 0, 0, 2, 'Added settings table');
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (3, 0, 0, 3, 'Added section column to settings table');
+INSERT INTO [versions] ([version_id], [version_major], [version_minor], [version_revision], [changelog]) VALUES (4, 0, 0, 4, 'Added loglevel record in settings table and unique key to versions table');
