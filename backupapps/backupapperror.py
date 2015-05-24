@@ -1,0 +1,2 @@
+class BackupAppError(Exception):
+    pass
