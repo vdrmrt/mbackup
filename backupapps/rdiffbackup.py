@@ -4,8 +4,9 @@ from .backupapperror import BackupAppError
 class Rdiffbackup(BackupApp):
 
     _exe = 'rdiff-backup'
+    _hostSeperator = '::'
 
-    def __init__(self,source = None,dest = None,exe=None,verbosity = 3):
+    def __init__(self,source = None,dest = None,verbosity = 3):
         super(Rdiffbackup, self).__init__(source,dest)
 
         self.setVerbosity(verbosity)
@@ -15,10 +16,6 @@ class Rdiffbackup(BackupApp):
         popenOptions.extend(options)
 
         return popenOptions
-
-    def backup(self):
-        options = [self._source,self.getFullDest()]
-        return self.start(options)
 
     def remove(self,time):
         options = ['--force','--remove-older-than',

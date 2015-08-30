@@ -1,20 +1,23 @@
 from abc import ABCMeta, abstractmethod, abstractproperty
 
+from .backupapperror import BackupAppError
 import queue
-import os,sys
+import os
+import sys
 import shutil
 import subprocess
 from threading import Thread
 import logging
 import errno
-import paramiko
 
 class BackupApp(metaclass=ABCMeta):
 
-    __metaclass__ = ABCMeta
-
     @abstractproperty
     def _exe(self):
+        pass
+
+    @abstractproperty
+    def _hostSeperator(self):
         pass
 
     def __init__(self,source,dest):
@@ -24,30 +27,14 @@ class BackupApp(metaclass=ABCMeta):
         self._logger = logging.getLogger(__name__)
         self.proc = None
 
-    def makeSurePathExists(self,path):
-        if hasattr(self,'_host'):
-            client=paramiko.SSHClient()
-            client.load_system_host_keys()
-            client.connect('lambda')
-            stdin,stdout,stderr=client.exec_command(
-                "mkdir -p '" + self._dest + "'")
-            print(stdout.readlines())
-            print(stderr.readlines())
-            print(stdout.channel.recv_exit_status())    # status is 0
-
-        else:
-            try:
-                os.makedirs(path)
-            except OSError as exception:
-                if exception.errno != errno.EEXIST:
-                    raise BackupAppError(
-                        'Unable to create destination path {p}'
-                        .format(s=s))
+    def backup(self):
+        options = [self._source,self.getFullDest()]
+        return self.start(options)
 
     def stream_watcher(self,identifier, stream):
         for line in stream:
-            self._io_q.put((identifier,
-                            line.decode(sys.stdout.encoding)))
+            dec = line.decode(sys.stdout.encoding)
+            self._io_q.put((identifier,dec))
 
         if not stream.closed:
             stream.close()
@@ -55,10 +42,12 @@ class BackupApp(metaclass=ABCMeta):
     def start(self,options):
         popenOptions = self._getOptions(options)
 
+
+        self._logger.debug('Starting new process with following '
+                           'options {o}'.format(o=popenOptions))
         self.proc = subprocess.Popen(popenOptions,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE)
-
         to = Thread(target=self.stream_watcher,
                     name='stdout-watcher',
                     args=('STDOUT', self.proc.stdout)).start()
@@ -102,12 +91,11 @@ class BackupApp(metaclass=ABCMeta):
         self._dest = d
 
     def getFullDest(self):
-        self.makeSurePathExists(self._dest)
         str = ''
         if hasattr(self,'_host'):
             if hasattr(self,'_user'):
                 str += self._user + '@'
-            str += self._host + '::'
+            str += self._host + self._hostSeperator
         str += self._dest
         return str
 
@@ -127,10 +115,6 @@ class BackupApp(metaclass=ABCMeta):
 
     def setUser(self,u):
         self._user = u
-
-    @abstractmethod
-    def backup(self):
-        return
 
     @abstractmethod
     def _getOptions(self,options):

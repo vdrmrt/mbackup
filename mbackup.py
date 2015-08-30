@@ -17,14 +17,14 @@ def readBackupList(listFile):
         lineCounter+=1
         if not line.startswith('#'):
             bItem = shlex.split(line.rstrip())
-            if bItem[1] in backupTypes:
+            if bItem[0] in backupTypes:
                 backupList.append(bItem)
             else:
                 raise ValueError('Invalid backup type in {f} '
                                  'on line {c} for {b}'
                                  .format(f=listFile.name,
                                          c=lineCounter,
-                                         b=bItem[0]))
+                                         b=bItem[1]))
     listFile.close()
     return backupList
 
@@ -32,7 +32,7 @@ def parsArguments():
     parser = argparse.ArgumentParser(
                 prog='mbackup',
                 formatter_class=argparse.RawDescriptionHelpFormatter,
-                description='mbackup tool to create backups with'
+                description='mbackup tool to create backups with '
                             'rdiff-backup and rsync.',
                 epilog='''
 The file format used to list the directories to backup is one line per
@@ -59,6 +59,8 @@ Options -i and -m are ignored for rsync backups.
 
     parser.add_argument('-d', action='store_true', default=False,
                         help='do a dummy run')
+    parser.add_argument('--debug', action='store_true', default=False,
+                        help='enable debugging output')
     parser.add_argument('-i', action='store_true', default=False,
                         help='for rdiff-backup show previous '
                              'increments')
@@ -89,7 +91,7 @@ Options -i and -m are ignored for rsync backups.
 
     return parser.parse_args()
 
-def createLogger(logFile,verbose = False):
+def createLogger(logFile,debug = False):
     logger = logging.getLogger() #Get root logger
 
     consoleFormatter = logging.Formatter('%(message)s')
@@ -101,7 +103,7 @@ def createLogger(logFile,verbose = False):
                     maxBytes=100000, backupCount=2)
     streamHandler = logging.StreamHandler()
 
-    logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+    logger.setLevel(logging.DEBUG if debug else logging.INFO)
     logger.addHandler(fileHandler)
     logger.addHandler(streamHandler)
 
@@ -113,7 +115,7 @@ def createLogger(logFile,verbose = False):
 def main():
     args = parsArguments()
 
-    logger = createLogger(args.log)
+    logger = createLogger(args.log,args.debug)
 
     rdiffbackupVerbosityLevel = 5 if args.v else 3
 
@@ -122,7 +124,14 @@ def main():
     logger.debug('log file set to {f}'.format(f=args.log))
     logger.debug('target backup directory set to {f}'.format(f=args.t))
 
+    logger.debug('Showing backup list')
+    logger.debug('type[rdiff-backup | rsync] directory target_dir')
     backupList = readBackupList(args.l)
+    for line in backupList:
+        s=''
+        for item in line:
+            s+=item + ' '
+        logger.debug('{s}'.format(s=s))
 
     if args.w : input("Press Enter to start the backups...")
 
@@ -130,10 +139,19 @@ def main():
 
     for backupItem in backupList:
         try:
-            source = backupItem[0]
-            dest = os.path.join(args.t,backupItem[0].strip('/'))
-            logger.info('{t} of {s}'.format(t=backupItem[1],s=source))
-            if backupItem[1] =='rdiff-backup':
+            backupType = backupItem[0]
+            logger.debug('Starting new {t} backup:'
+                         .format(t=backupType))
+            source = backupItem[1]
+            logger.debug('Source set to: {b}'.format(b=backupItem[1]))
+            try:
+                target = backupItem[2]
+            except IndexError:
+                target = backupItem[1]
+            dest = os.path.join(args.t,target.strip('/'))
+            logger.debug('Destination set to: {d}'.format(d=dest))
+            if backupType =='rdiff-backup':
+                logger.info('Starting rdiff-backup of {s}'.format(s=source))
                 rdb = backupapps.Rdiffbackup(
                         source=source,
                         dest=dest,
@@ -143,20 +161,32 @@ def main():
                 rc = rdb.backup() if not args.d else 0
 
                 if rc == 0:
-                    logger.info('\033[1;32m[OK]\033[1;m') #Green OK
-
+                    logger.info('\033[1;32mrdiff-backup of {s} successfull\033[1;m'.format(s=source)) #Green OK
                     if args.m:
-                        logger.info('Deleting increments'
+                        logger.info('Deleting increments '
                                     'older than {m}'.format(m=args.m))
                         if not args.d: rdb.remove(args.m)
 
                     logger.info('Listing increments')
                     if not args.d: rdb.listIncrementSizes()
                 else:
-                    logger.error('\033[1;31m[FAIL]\033[1;m') #Red FAIL
-            elif backupItem[1] =='rsync':
-                None
-                #todo
+                    logger.error('\033[1;31mrdiff-backup of {s} failed\033[1;m') #Red FAIL
+            elif backupType =='rsync':
+                logger.info('Starting rsync backup of {s}'.format(s=source))
+                rsb = backupapps.Rsyncbackup(
+                    source=source,
+                    dest=dest,
+                    verbosity=args.v)
+                if args.host: rsb.setHost(args.host)
+                if args.user: rsb.setUser(args.user)
+                rc = rsb.backup() if not args.d else 0
+                if rc == 0:
+                    logger.info('\033[1;32mrsync of {s} successfull\033[1;m'.format(s=source)) #Green OK
+                else:
+                    logger.error('\033[1;31mrsync of {s} failed\033[1;m') #Red FAIL
+
+            else:
+                logger.error('Unkown backup type') #Green OK
             logger.info('')
         except backupapps.BackupAppError as inst:
             logger.error('{t}: {m}'.format(t=type(inst).__name__,
