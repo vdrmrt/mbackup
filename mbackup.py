@@ -6,6 +6,7 @@ import os
 import sys
 import logging
 import logging.handlers
+import re
 
 import backupapps
 
@@ -27,6 +28,11 @@ def readBackupList(listFile):
                                          b=bItem[1]))
     listFile.close()
     return backupList
+
+def getVersion():
+    svnHeadUrl = '$HeadURL: svn+ssh://lambda/var/svn-repos/mbackup/trunk/mbackup.py $'
+    return re.search('.*/(?:.*|tags|branches)/(.*|trunk)/mbackup.py'
+                        ,svnHeadUrl).group(1)
 
 def parsArguments():
     parser = argparse.ArgumentParser(
@@ -83,6 +89,9 @@ Options -i and -m are ignored for rsync backups.
                              'rdiff-backups')
     parser.add_argument('-v', action='store_true',default=False,
                         help='enable verbose output')
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {v}'.format(v=getVersion()),
+                        help='show version and exit')
     parser.add_argument('-w', action='store_true', default=False,
                         help='wait on user input to start the backup')
     parser.add_argument('t', action='store',default=False,

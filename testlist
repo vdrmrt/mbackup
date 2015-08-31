@@ -1,0 +1,7 @@
+# Backup list for mbackup
+# format
+# type[rdiff-backup | rsync] directory target_dir
+rdiff-backup "/home/vdrmrt/temp/Ludovico Einaudi/" "Ludovico Einaudi"
+rdiff-backup /home/vdrmrt/temp/floating_cards/ "other_dir"
+rdiff-backup /home/vdrmrt/temp/initializr/ initi
+rsync /home/vdrmrt/Scripts

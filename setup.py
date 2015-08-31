@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+import re
 
-svnHeadUrl = $HeadURL$
+svnHeadUrl = '$HeadURL$'
 version = re.search('.*/(?:.*|tags|branches)/(.*|trunk)/setup.py'
                     ,svnHeadUrl).group(1)
 
@@ -12,6 +13,6 @@ setup(name='mbackup',
                   'rdiff-backup and rsync.',
       author='Maarten Vandenryt',
       author_email='vdrmrt@gmail.com',
-      packages=['backupapps', 'distutils.command'],
+      packages=['backupapps'],
       scripts=['mbackup.py']
      )
