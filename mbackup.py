@@ -153,49 +153,57 @@ def main():
                          .format(t=backupType))
             source = backupItem[1]
             logger.debug('Source set to: {b}'.format(b=backupItem[1]))
+
+            # check if we have a backup target dir if not use the
+            # source dir as a relative path
             try:
                 target = backupItem[2]
             except IndexError:
-                target = backupItem[1]
-            dest = os.path.join(args.t,target.strip('/'))
+                target = source.lstrip('/')
+
+            # if the path is absolute use it like it is if not append
+            # it to the global target dir
+            if os.path.isabs(target):
+                dest = target.rstrip('/')
+            else:
+                dest = os.path.join(args.t,target.rstrip('/'))
+
             logger.debug('Destination set to: {d}'.format(d=dest))
+
+            logger.info('Starting {t} of {s}'
+                        .format(t=backupType,s=source))
             if backupType =='rdiff-backup':
-                logger.info('Starting rdiff-backup of {s}'.format(s=source))
-                rdb = backupapps.Rdiffbackup(
+                ba = backupapps.Rdiffbackup(
                         source=source,
                         dest=dest,
                         verbosity=rdiffbackupVerbosityLevel)
-                if args.host: rdb.setHost(args.host)
-                if args.user: rdb.setUser(args.user)
-                rc = rdb.backup() if not args.d else 0
-
-                if rc == 0:
-                    logger.info('\033[1;32mrdiff-backup of {s} successfull\033[1;m'.format(s=source)) #Green OK
-                    if args.m:
-                        logger.info('Deleting increments '
-                                    'older than {m}'.format(m=args.m))
-                        if not args.d: rdb.remove(args.m)
-
-                    logger.info('Listing increments')
-                    if not args.d: rdb.listIncrementSizes()
-                else:
-                    logger.error('\033[1;31mrdiff-backup of {s} failed\033[1;m') #Red FAIL
             elif backupType =='rsync':
-                logger.info('Starting rsync backup of {s}'.format(s=source))
-                rsb = backupapps.Rsyncbackup(
-                    source=source,
-                    dest=dest,
-                    verbosity=args.v)
-                if args.host: rsb.setHost(args.host)
-                if args.user: rsb.setUser(args.user)
-                rc = rsb.backup() if not args.d else 0
-                if rc == 0:
-                    logger.info('\033[1;32mrsync of {s} successfull\033[1;m'.format(s=source)) #Green OK
-                else:
-                    logger.error('\033[1;31mrsync of {s} failed\033[1;m') #Red FAIL
-
+                ba = backupapps.Rsyncbackup(
+                        source=source,
+                        dest=dest,
+                        verbosity=args.v)
             else:
                 logger.error('Unkown backup type') #Green OK
+                rc == 1
+
+            if args.host: ba.setHost(args.host)
+            if args.user: ba.setUser(args.user)
+
+            rc = ba.backup() if not args.d else 0
+
+            if rc == 0:
+                logger.info('\033[1;32m{t} of {s} successfull\033[1;m'
+                            .format(t=backupType,s=source)) #Green OK
+                if backupType =='rdiff-backup' and args.m:
+                    logger.info('Deleting increments '
+                                'older than {m}'.format(m=args.m))
+                    if not args.d: ba.remove(args.m)
+                    logger.info('Listing increments')
+                    if not args.d: ba.listIncrementSizes()
+            else:
+                logger.error('\033[1;31m {t} of {s} failed\033[1;m'
+                             .format(t=backupType,s=source)) #Red FAIL
+
             logger.info('')
         except backupapps.BackupAppError as inst:
             logger.error('{t}: {m}'.format(t=type(inst).__name__,
