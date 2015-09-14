@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# force all imports to be absolute rather then relative.
+from __future__ import absolute_import 
+
 import argparse
 import shlex
 import os
