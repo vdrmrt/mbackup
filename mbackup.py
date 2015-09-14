@@ -121,6 +121,14 @@ def createLogger(logFile,debug = False):
 
     return logger
 
+def logDebugList(list):
+    logger = logging.getLogger()
+    for line in list:
+        s=''
+        for item in line:
+            s+=item + ' '
+        logger.debug('{s}'.format(s=s))
+
 def main():
     args = parsArguments()
 
@@ -133,14 +141,10 @@ def main():
     logger.debug('log file set to {f}'.format(f=args.log))
     logger.debug('target backup directory set to {f}'.format(f=args.t))
 
-    logger.debug('Showing backup list')
+    logger.debug('Backup list')
     logger.debug('type[rdiff-backup | rsync] directory target_dir')
     backupList = readBackupList(args.l)
-    for line in backupList:
-        s=''
-        for item in line:
-            s+=item + ' '
-        logger.debug('{s}'.format(s=s))
+    logDebugList(backupList)
 
     if args.w : input("Press Enter to start the backups...")
 
