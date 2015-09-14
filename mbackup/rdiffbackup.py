@@ -1,7 +1,7 @@
-from .backupapp import BackupApp
-from .backupapperror import BackupAppError
+from .mbackup import Mbackup
+from .mbackuperror import MbackupError
 
-class Rdiffbackup(BackupApp):
+class Rdiffbackup(Mbackup):
 
     _exe = 'rdiff-backup'
     _hostSeperator = '::'
@@ -34,7 +34,7 @@ class Rdiffbackup(BackupApp):
         if v in range(0,9):
             self._verbosity = v
         else:
-            raise BackupAppError('Invalid verbosity level')
+            raise MbackupError('Invalid verbosity level')
 
     def getVerbosityString(self):
         if hasattr(self,'_verbosity'):

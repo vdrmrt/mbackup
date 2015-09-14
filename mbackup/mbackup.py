@@ -1,6 +1,6 @@
+from .mbackuperror import MbackupError
 from abc import ABCMeta, abstractmethod, abstractproperty
 
-from .backupapperror import BackupAppError
 import queue
 import os
 import sys
@@ -10,7 +10,7 @@ from threading import Thread
 import logging
 import errno
 
-class BackupApp(metaclass=ABCMeta):
+class Mbackup(metaclass=ABCMeta):
 
     @abstractproperty
     def _exe(self):
@@ -102,12 +102,12 @@ class BackupApp(metaclass=ABCMeta):
     def setSource(self,s):
         spath = os.path.normpath(s)
         if not os.path.isabs(spath):
-            raise BackupAppError('Source path {s} is not absolute'
+            raise MbackupError('Source path {s} is not absolute'
                                  .format(s=s))
         if os.access(spath,os.R_OK):
             self._source = spath
         else:
-            raise BackupAppError('Source path {s} does not exist or '
+            raise MbackupError('Source path {s} does not exist or '
                                  'is not readable'.format(s=s))
 
     def setHost(self,h):

@@ -1,7 +1,7 @@
-from .backupapp import BackupApp
-from .backupapperror import BackupAppError
+from .mbackup import Mbackup
+from .mbackuperror import MbackupError
 
-class Rsyncbackup(BackupApp):
+class Rsyncbackup(Mbackup):
 
     _exe = 'rsync'
     _hostSeperator = ':'

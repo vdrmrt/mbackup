@@ -13,6 +13,6 @@ setup(name='mbackup',
                   'rdiff-backup and rsync.',
       author='Maarten Vandenryt',
       author_email='vdrmrt@gmail.com',
-      packages=['backupapps'],
+      packages=['mbackup'],
       scripts=['mbackup.py']
      )

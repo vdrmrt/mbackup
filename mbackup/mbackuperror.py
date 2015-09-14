@@ -1,2 +1,2 @@
-class BackupAppError(Exception):
+class MbackupError(Exception):
     pass

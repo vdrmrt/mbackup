@@ -8,7 +8,7 @@ import logging
 import logging.handlers
 import re
 
-import backupapps
+import mbackup
 
 def readBackupList(listFile):
     backupTypes = ['rdiff-backup','rsync']
@@ -177,12 +177,12 @@ def main():
             logger.info('Starting {t} of {s}'
                         .format(t=backupType,s=source))
             if backupType =='rdiff-backup':
-                ba = backupapps.Rdiffbackup(
+                ba = mbackup.Rdiffbackup(
                         source=source,
                         dest=dest,
                         verbosity=rdiffbackupVerbosityLevel)
             elif backupType =='rsync':
-                ba = backupapps.Rsyncbackup(
+                ba = mbackup.Rsyncbackup(
                         source=source,
                         dest=dest,
                         verbosity=args.v)
@@ -209,7 +209,7 @@ def main():
                              .format(t=backupType,s=source)) #Red FAIL
 
             logger.info('')
-        except backupapps.BackupAppError as inst:
+        except mbackup.MbackupError as inst:
             logger.error('{t}: {m}'.format(t=type(inst).__name__,
                                     m=inst))
 
