@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # force all imports to be absolute rather then relative.
-from __future__ import absolute_import 
+from __future__ import absolute_import
 
 import argparse
 import shlex
@@ -11,7 +11,7 @@ import logging
 import logging.handlers
 import re
 
-import mbackup
+import mbackuplib
 
 def readBackupList(listFile):
     backupTypes = ['rdiff-backup','rsync']
@@ -38,12 +38,13 @@ def getVersion():
                         ,svnHeadUrl).group(1)
 
 def parsArguments():
-    parser = argparse.ArgumentParser(
-                prog='mbackup',
-                formatter_class=argparse.RawDescriptionHelpFormatter,
-                description='mbackup tool to create backups with '
-                            'rdiff-backup and rsync.',
-                epilog='''
+    description = ('mbackup is python application to create '
+                   'backups with rdiff-backup and rsync.')
+    epilog = '''
+If no file is supplied to list directories to backup (option -l) mbackup
+will look for .mbackup-list in the users home directory. If run as root
+mbackup will look in /etc/mbackup-list
+
 The file format used to list the directories to backup is one line per
 backup location. Each line contains two parameters separated with a
 white space (space or tab): the directory to backup and the type of
@@ -57,7 +58,14 @@ For example:
 "/mnt/archive 2" rsync
 
 Options -i and -m are ignored for rsync backups.
-''')
+'''
+
+    parser = argparse.ArgumentParser(
+                prog='mbackup',
+                formatter_class = argparse.RawDescriptionHelpFormatter,
+                description = description,
+                epilog = epilog
+                )
 
     if os.geteuid() == 0:
         defaultBackupList = '/etc/mbackup-list'
@@ -180,12 +188,12 @@ def main():
             logger.info('Starting {t} of {s}'
                         .format(t=backupType,s=source))
             if backupType =='rdiff-backup':
-                ba = mbackup.Rdiffbackup(
+                ba = mbackuplib.Rdiffbackup(
                         source=source,
                         dest=dest,
                         verbosity=rdiffbackupVerbosityLevel)
             elif backupType =='rsync':
-                ba = mbackup.Rsyncbackup(
+                ba = mbackuplib.Rsyncbackup(
                         source=source,
                         dest=dest,
                         verbosity=args.v)
