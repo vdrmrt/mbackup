@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# force all imports to be absolute rather then relative.
-from __future__ import absolute_import
-
 import argparse
 import shlex
 import os
@@ -14,6 +11,18 @@ import re
 import mbackuplib
 
 def readBackupList(listFile):
+    """ Read list of locations to backup
+
+    Args:
+        listFile (fileHandler): File containing locations to backup
+
+    Returns:
+        list: a multidimensional list.
+
+    Raises:
+        an error when their is an unkown backup type.
+    
+    """
     backupTypes = ['rdiff-backup','rsync']
     backupList = []
     lineCounter = 0
