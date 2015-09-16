@@ -26,5 +26,5 @@ setup(name='mbackup',
       author='Maarten Vandenryt',
       author_email='vdrmrt@gmail.com',
       packages=['mbackuplib'],
-      scripts=['mbackup.py']
+      scripts=['bin/mbackup.py']
      )
