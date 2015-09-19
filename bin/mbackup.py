@@ -226,18 +226,20 @@ def main():
             if rc == 0:
                 logger.info('\033[1;32m{t} of {s} successfull\033[1;m'
                             .format(t=backupType,s=source)) #Green OK
-                if backupType =='rdiff-backup' and args.m:
-                    logger.info('Deleting increments '
-                                'older than {m}'.format(m=args.m))
-                    if not args.d: ba.remove(args.m)
-                    logger.info('Listing increments')
-                    if not args.d: ba.listIncrementSizes()
+                if backupType =='rdiff-backup':
+                    if args.m:
+                        logger.info('Deleting increments '
+                                    'older than {m}'.format(m=args.m))
+                        if not args.d: ba.remove(args.m)
+                    if args.i:
+                        logger.info('Listing increments')
+                        if not args.d: ba.listIncrementSizes()
             else:
                 logger.error('\033[1;31m {t} of {s} failed\033[1;m'
                              .format(t=backupType,s=source)) #Red FAIL
 
             logger.info('')
-        except mbackup.MbackupError as inst:
+        except mbackuplib.MbackupError as inst:
             logger.error('{t}: {m}'.format(t=type(inst).__name__,
                                     m=inst))
 
