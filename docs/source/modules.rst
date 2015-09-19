@@ -1,7 +1,7 @@
-bin
-===
+mbackuplib
+==========
 
 .. toctree::
    :maxdepth: 4
 
-   mbackup
+   mbackuplib
