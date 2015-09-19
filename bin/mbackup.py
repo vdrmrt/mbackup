@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# coding: utf-8
+"""This module handles the cli interface for mbackup and is the
+entrypoint for the mbackup application.
+
+Use mbackup --help to get help message.
+
+"""
 
 import argparse
 import shlex
@@ -21,7 +28,7 @@ def readBackupList(listFile):
 
     Raises:
         an error when their is an unkown backup type.
-    
+
     """
     backupTypes = ['rdiff-backup','rsync']
     backupList = []
@@ -50,6 +57,7 @@ def parsArguments():
     description = ('mbackup is python application to create '
                    'backups with rdiff-backup and rsync.')
     epilog = '''
+mbackup reads a file with the locations to backup.
 If no file is supplied to list directories to backup (option -l) mbackup
 will look for .mbackup-list in the users home directory. If run as root
 mbackup will look in /etc/mbackup-list
