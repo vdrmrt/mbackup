@@ -6,28 +6,42 @@
 Welcome to mbackup's documentation!
 ===================================
 
-General:
---------
-
 .. include:: ../../README.rst
 
-cli usage:
-----------
+Command line usage:
+-------------------
 mbackup can be invoked from the command line. with the follwing options.
 ::
   mbackup [-h] [-d] [--debug] [-i] [--host HOST] [--user USER] [-l file]
-          [--log LOG] [-m time] [-v] [--version] [-w]
-          target-dir
-Use mbackup -h to get an explanation of each of the options
+    [--log LOG] [-m time] [-v] [--version] [-w]
+    target-dir
+
+  positional arguments:
+    target-dir   directory to store the backups
+
+  optional arguments:
+    -h, --help   show this help message and exit
+    -d           do a dummy run
+    --debug      enable debugging output
+    -i           for rdiff-backup show previous increments
+    --host HOST  ssh host to backup to
+    --user USER  ssh user to login to backup host
+    -l file      file path of list of directories to backup
+    --log LOG    set log file
+    -m time      how long to keep increments for rdiff-backups
+    -v           enable verbose output
+    --version    show version and exit
+    -w           wait on user input to start the backup
+
+Use mbackup -h to get an explanation of each of the options.
 
 
 Structure:
 ----------
 
-The mbackup application consists of two parts the mbackup script that contains the cli interface and the mbacklib package that contains that handles the rdiff-backup and rsync programs.
-
-Contents:
----------
+The mbackup application consists of two parts the mbackup script that
+contains the cli interface and the mbacklib package. Mbackuplib is the
+interfact to the rdiff-backup and rsync programs.
 
 .. toctree::
   :maxdepth: 2

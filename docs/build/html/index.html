@@ -129,10 +129,10 @@
             
   <div class="section" id="welcome-to-mbackup-s-documentation">
 <h1>Welcome to mbackup&#8217;s documentation!<a class="headerlink" href="#welcome-to-mbackup-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="general">
-<h2>General:<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h2>
 <p>mbackup is python application to create  backups with rdiff-backup
 and / or rsync.</p>
+<div class="section" id="the-backup-list">
+<h2>The backup list:<a class="headerlink" href="#the-backup-list" title="Permalink to this headline">¶</a></h2>
 <p>The locations to backup or stored in a file.
 If no file is supplied to list directories to backup (option -l) mbackup
 will look for .mbackup-list in the users home directory. If run as root
@@ -151,22 +151,45 @@ Directories with whitespace need to be wrapped in double quotes.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="cli-usage">
-<h2>cli usage:<a class="headerlink" href="#cli-usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-log-file">
+<h2>The log file:<a class="headerlink" href="#the-log-file" title="Permalink to this headline">¶</a></h2>
+<p>mbackup logs its output to a file. If no log file is specified
+(&#8211;log option) mbackup will set /var/log/mbackup.log as the log file
+when run as root. When not executed as root ~/.mbackup.log is used as
+the log file.</p>
+</div>
+<div class="section" id="command-line-usage">
+<h2>Command line usage:<a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <p>mbackup can be invoked from the command line. with the follwing options.</p>
 <div class="highlight-python"><div class="highlight"><pre>mbackup [-h] [-d] [--debug] [-i] [--host HOST] [--user USER] [-l file]
-        [--log LOG] [-m time] [-v] [--version] [-w]
-        target-dir
+  [--log LOG] [-m time] [-v] [--version] [-w]
+  target-dir
+
+positional arguments:
+  target-dir   directory to store the backups
+
+optional arguments:
+  -h, --help   show this help message and exit
+  -d           do a dummy run
+  --debug      enable debugging output
+  -i           for rdiff-backup show previous increments
+  --host HOST  ssh host to backup to
+  --user USER  ssh user to login to backup host
+  -l file      file path of list of directories to backup
+  --log LOG    set log file
+  -m time      how long to keep increments for rdiff-backups
+  -v           enable verbose output
+  --version    show version and exit
+  -w           wait on user input to start the backup
 </pre></div>
 </div>
-<p>Use mbackup -h to get an explanation of each of the options</p>
+<p>Use mbackup -h to get an explanation of each of the options.</p>
 </div>
 <div class="section" id="structure">
 <h2>Structure:<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
-<p>The mbackup application consists of two parts the mbackup script that contains the cli interface and the mbacklib package that contains that handles the rdiff-backup and rsync programs.</p>
-</div>
-<div class="section" id="contents">
-<h2>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<p>The mbackup application consists of two parts the mbackup script that
+contains the cli interface and the mbacklib package. Mbackuplib is the
+interfact to the rdiff-backup and rsync programs.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mbackup.html">mbackup module</a></li>

@@ -3,9 +3,9 @@
 """This module handles the cli interface for mbackup and is the
 entrypoint for the mbackup application.
 
-Use mbackup --help to get help message.
-
 """
+
+__version__ = 'trunk'
 
 import argparse
 import shlex
@@ -48,12 +48,14 @@ def readBackupList(listFile):
     listFile.close()
     return backupList
 
-def getVersion():
-    svnHeadUrl = '$HeadURL: svn+ssh://lambda/var/svn-repos/mbackup/trunk/mbackup.py $'
-    return re.search('.*/(?:.*|tags|branches)/(.*|trunk)/mbackup.py'
-                        ,svnHeadUrl).group(1)
-
 def parsArguments():
+    """ Setup argparse to handle the cli arguments
+
+    Returns:
+        object: argparse object with processed arguments
+    """
+
+
     description = ('mbackup is python application to create '
                    'backups with rdiff-backup and rsync.')
     epilog = '''
@@ -118,7 +120,7 @@ Options -i and -m are ignored for rsync backups.
     parser.add_argument('-v', action='store_true',default=False,
                         help='enable verbose output')
     parser.add_argument('--version', action='version',
-                        version='%(prog)s {v}'.format(v=getVersion()),
+                        version='%(prog)s {v}'.format(v=__version__),
                         help='show version and exit')
     parser.add_argument('-w', action='store_true', default=False,
                         help='wait on user input to start the backup')
@@ -129,6 +131,17 @@ Options -i and -m are ignored for rsync backups.
     return parser.parse_args()
 
 def createLogger(logFile,debug = False):
+    """ Creates a logger object and sets the parameters
+    The logger gets 2 handlers a file handler and a steamhandler for
+    console output.
+
+    Args:
+        logFile (fileHandler): File to log output to
+        debug (boolean): set to true to enable debug output
+
+    Returns:
+        object: configured logger object
+    """
     logger = logging.getLogger() #Get root logger
 
     consoleFormatter = logging.Formatter('%(message)s')
@@ -150,6 +163,12 @@ def createLogger(logFile,debug = False):
     return logger
 
 def logDebugList(list):
+    """Function to get a list debugged with the current logger.
+
+    Args:
+        list (list): Multidimensional list which needs to go to the
+            debug logger.
+    """
     logger = logging.getLogger()
     for line in list:
         s=''
@@ -158,6 +177,15 @@ def logDebugList(list):
         logger.debug('{s}'.format(s=s))
 
 def main():
+    """Main function to call when executing mbackup from the cli. The
+    function will do some initialization and will then loop over the
+    provided list and backups with associated backup type.
+
+    Raises:
+        MbackupError: When something goes wrong with a backup. Mbackup
+            will continue with the next backup.
+
+    """
     args = parsArguments()
 
     logger = createLogger(args.log,args.debug)
