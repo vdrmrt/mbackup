@@ -1,4 +1,4 @@
-""" This is a test """
+""" Package mbackuplib, no functionality implemented here."""
 
 __version__ = 'trunk'
 

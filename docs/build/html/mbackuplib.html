@@ -142,123 +142,260 @@
 </div>
 <div class="section" id="module-mbackuplib.mbackup">
 <span id="mbackuplib-mbackup-module"></span><h2>mbackuplib.mbackup module<a class="headerlink" href="#module-mbackuplib.mbackup" title="Permalink to this headline">¶</a></h2>
+<p>Module that defines the main mbackup class.</p>
 <dl class="class">
 <dt id="mbackuplib.mbackup.Mbackup">
 <em class="property">class </em><code class="descclassname">mbackuplib.mbackup.</code><code class="descname">Mbackup</code><span class="sig-paren">(</span><em>source</em>, <em>dest</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The Mbackup class is defined as an Abstract Base Clases this
+class implements the main backup functionality other classes extend
+this class to handle the actual interface with the actual backup
+program.
+These are the abstract properties:</p>
+<ul class="simple">
+<li>_exe : the actual backup executable.</li>
+<li>_hostSeperator : the sperator after the host used in
+target / connection path if the backup program. This seperator is
+different between backup programs.</li>
+</ul>
+<p>These are the abstract methods:</p>
+<ul class="simple">
+<li>_getOptions: the options to pass to the backup program.</li>
+</ul>
+<p>This class uses subprocess to execute the backup program and
+threading to capture and print the output of the backup program.</p>
+<p>When the backup is started, <code class="xref py py-func docutils literal"><span class="pre">start()</span></code> method,
+the backup program is executed with the stdout and stderr pipes
+redirected to subprocess. Then two threads are started,
+<code class="xref py py-func docutils literal"><span class="pre">stream_watcher()</span></code> method, to capture and put
+the output from the stdout and stdin in a queue. In the running
+parent process this queue is read,
+<code class="xref py py-func docutils literal"><span class="pre">readOutputQueue()</span></code> method, untill the
+subprocess is finished.</p>
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.backup">
 <code class="descname">backup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.backup" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start the backup</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.getFullDest">
 <code class="descname">getFullDest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.getFullDest" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add host and user to the destination path to create a
+target path used by the backup program.</p>
+<dl class="docutils">
+<dt>Retruns:</dt>
+<dd>Target path containg the target path and if set the host and
+user.</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.isFinished">
 <code class="descname">isFinished</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.isFinished" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if backup program is finished</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True or false</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.kill">
 <code class="descname">kill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.kill" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Kills the running backup program</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.readOutputQueue">
 <code class="descname">readOutputQueue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.readOutputQueue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="mbackuplib.mbackup.Mbackup.setDest">
-<code class="descname">setDest</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.setDest" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reads the queue and passes output to logger.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.setHost">
 <code class="descname">setHost</code><span class="sig-paren">(</span><em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.setHost" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the target host.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.setSource">
 <code class="descname">setSource</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.setSource" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the source path check if the path is absolote or
+readable.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">MbackupError</span></code> &#8211;
+If path is not absolute or readable.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.setUser">
 <code class="descname">setUser</code><span class="sig-paren">(</span><em>u</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.setUser" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Set the user to be used on target host.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.start">
 <code class="descname">start</code><span class="sig-paren">(</span><em>options</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.start" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Start the backup</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> (<em>list</em>) &#8211; options to pass to backup program.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Returncode of the backup program.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.stream_watcher">
 <code class="descname">stream_watcher</code><span class="sig-paren">(</span><em>identifier</em>, <em>stream</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.stream_watcher" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loop over a stream and put each line in a queue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>identifier</strong> (<em>string</em>) &#8211; used to keep track of different streams
+because all data goes to the same queue.</li>
+<li><strong>stream</strong> (<em>stream</em>) &#8211; stream to read.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-mbackuplib.mbackuperror">
 <span id="mbackuplib-mbackuperror-module"></span><h2>mbackuplib.mbackuperror module<a class="headerlink" href="#module-mbackuplib.mbackuperror" title="Permalink to this headline">¶</a></h2>
+<p>Module that defines the MbackupError class.</p>
 <dl class="exception">
 <dt id="mbackuplib.mbackuperror.MbackupError">
 <em class="property">exception </em><code class="descclassname">mbackuplib.mbackuperror.</code><code class="descname">MbackupError</code><a class="headerlink" href="#mbackuplib.mbackuperror.MbackupError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Class used for raises errors inside a Mbackup class or
+subclass</p>
 </dd></dl>
 
 </div>
 <div class="section" id="module-mbackuplib.rdiffbackup">
 <span id="mbackuplib-rdiffbackup-module"></span><h2>mbackuplib.rdiffbackup module<a class="headerlink" href="#module-mbackuplib.rdiffbackup" title="Permalink to this headline">¶</a></h2>
+<p>Module that defines the Rdiffbackup class.</p>
 <dl class="class">
 <dt id="mbackuplib.rdiffbackup.Rdiffbackup">
 <em class="property">class </em><code class="descclassname">mbackuplib.rdiffbackup.</code><code class="descname">Rdiffbackup</code><span class="sig-paren">(</span><em>source=None</em>, <em>dest=None</em>, <em>verbosity=3</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rdiffbackup.Rdiffbackup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mbackuplib.mbackup.Mbackup" title="mbackuplib.mbackup.Mbackup"><code class="xref py py-class docutils literal"><span class="pre">mbackuplib.mbackup.Mbackup</span></code></a></p>
+<p>Class that interfaces with the rdiffbackup program.
+This class implements the Mbackup abstract base class.</p>
 <dl class="method">
 <dt id="mbackuplib.rdiffbackup.Rdiffbackup.getVerbosityString">
 <code class="descname">getVerbosityString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rdiffbackup.Rdiffbackup.getVerbosityString" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Builds the string of the verbosity paramater to pass to
+options of rdiffbackup.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">String with verbosity level.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.rdiffbackup.Rdiffbackup.listIncrementSizes">
 <code class="descname">listIncrementSizes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rdiffbackup.Rdiffbackup.listIncrementSizes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Lists the increment sizes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Return code of rdiffbackup.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.rdiffbackup.Rdiffbackup.listIncrements">
 <code class="descname">listIncrements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rdiffbackup.Rdiffbackup.listIncrements" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Starts the rdiffbackup program to list all increments.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Return code of rdiffbackup.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.rdiffbackup.Rdiffbackup.remove">
 <code class="descname">remove</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rdiffbackup.Rdiffbackup.remove" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Starts the rdiffbackup program to remove backups older than
+the given time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> (<em>string</em>) &#8211; Rdiffbackup format of time to remove backups.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return code of rdiffbackup.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="mbackuplib.rdiffbackup.Rdiffbackup.setVerbosity">
 <code class="descname">setVerbosity</code><span class="sig-paren">(</span><em>v</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rdiffbackup.Rdiffbackup.setVerbosity" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Sets the verbosity level of rdiffbackup</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">MbackupError</span></code> &#8211;
+if verbosity level is invalid (0-9) is valid.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-mbackuplib.rsyncbackup">
 <span id="mbackuplib-rsyncbackup-module"></span><h2>mbackuplib.rsyncbackup module<a class="headerlink" href="#module-mbackuplib.rsyncbackup" title="Permalink to this headline">¶</a></h2>
+<p>Module that defines the Rsyncbackup class.</p>
 <dl class="class">
 <dt id="mbackuplib.rsyncbackup.Rsyncbackup">
 <em class="property">class </em><code class="descclassname">mbackuplib.rsyncbackup.</code><code class="descname">Rsyncbackup</code><span class="sig-paren">(</span><em>source=None</em>, <em>dest=None</em>, <em>verbosity=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.rsyncbackup.Rsyncbackup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mbackuplib.mbackup.Mbackup" title="mbackuplib.mbackup.Mbackup"><code class="xref py py-class docutils literal"><span class="pre">mbackuplib.mbackup.Mbackup</span></code></a></p>
+<p>Class that interfaces with the rsync program.
+This class implements the Mbackup abstract base class.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="module-mbackuplib">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mbackuplib" title="Permalink to this headline">¶</a></h2>
-<p>This is a test</p>
+<p>Package mbackuplib, no functionality implemented here.</p>
 </div>
 </div>
 
