@@ -149,14 +149,13 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>The Mbackup class is defined as an Abstract Base Clases this
 class implements the main backup functionality other classes extend
-this class to handle the actual interface with the actual backup
-program.
+this class to handle the interface with the actual backup program.
 These are the abstract properties:</p>
 <ul class="simple">
 <li>_exe : the actual backup executable.</li>
 <li>_hostSeperator : the sperator after the host used in
-target / connection path if the backup program. This seperator is
-different between backup programs.</li>
+target / connection path in the backup program. (This seperator is
+different between backup programs.)</li>
 </ul>
 <p>These are the abstract methods:</p>
 <ul class="simple">
@@ -225,8 +224,8 @@ user.</dd>
 <dl class="method">
 <dt id="mbackuplib.mbackup.Mbackup.setSource">
 <code class="descname">setSource</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackuplib.mbackup.Mbackup.setSource" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the source path check if the path is absolote or
-readable.</p>
+<dd><p>Set the source path and check if the path is exists is
+absolote and readable.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

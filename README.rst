@@ -21,6 +21,7 @@ Lines starting with a # are ignored.
 Directories with whitespace need to be wrapped in double quotes.
 
 For example:
+
 ::
   # Backup list for mbackup
   # directory type[rdiff-backup | rsync] target

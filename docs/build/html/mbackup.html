@@ -136,8 +136,8 @@ entrypoint for the mbackup application.</p>
 <dt id="mbackup.createLogger">
 <code class="descclassname">mbackup.</code><code class="descname">createLogger</code><span class="sig-paren">(</span><em>logFile</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mbackup.createLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a logger object and sets the parameters
-The logger gets 2 handlers a file handler and a steamhandler for
-console output.</p>
+The logger outputs to two handlers a file handler and a
+streamhandler for console output.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -184,7 +184,7 @@ provided list and backups with associated backup type.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">MbackupError</span></code> &#8211;
-When something goes wrong with a backup. Mbackup
+When an error is raised during a backup, Mbackup
 will continue with the next backup.</td>
 </tr>
 </tbody>
@@ -221,7 +221,8 @@ will continue with the next backup.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><strong>an error when their is an unkown backup type.</strong> &#8211;</td>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> &#8211;
+when their is an unkown backup type.</td>
 </tr>
 </tbody>
 </table>

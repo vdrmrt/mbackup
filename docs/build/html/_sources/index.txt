@@ -33,9 +33,6 @@ mbackup can be invoked from the command line. with the follwing options.
     --version    show version and exit
     -w           wait on user input to start the backup
 
-Use mbackup -h to get an explanation of each of the options.
-
-
 Structure:
 ----------
 

@@ -15,14 +15,13 @@ import errno
 class Mbackup(metaclass=ABCMeta):
     """ The Mbackup class is defined as an Abstract Base Clases this
     class implements the main backup functionality other classes extend
-    this class to handle the actual interface with the actual backup
-    program.
+    this class to handle the interface with the actual backup program.
     These are the abstract properties:
 
     * _exe : the actual backup executable.
     * _hostSeperator : the sperator after the host used in
-      target / connection path if the backup program. This seperator is
-      different between backup programs.
+      target / connection path in the backup program. (This seperator is
+      different between backup programs.)
 
     These are the abstract methods:
 
@@ -174,8 +173,8 @@ class Mbackup(metaclass=ABCMeta):
         return str
 
     def setSource(self,s):
-        """ Set the source path check if the path is absolote or
-        readable.
+        """ Set the source path and check if the path is exists is
+        absolote and readable.
 
         Raises:
             MbackupError: If path is not absolute or readable.

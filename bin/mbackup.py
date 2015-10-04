@@ -27,7 +27,7 @@ def readBackupList(listFile):
         list: a multidimensional list.
 
     Raises:
-        an error when their is an unkown backup type.
+        ValueError: when their is an unkown backup type.
 
     """
     backupTypes = ['rdiff-backup','rsync']
@@ -132,8 +132,8 @@ Options -i and -m are ignored for rsync backups.
 
 def createLogger(logFile,debug = False):
     """ Creates a logger object and sets the parameters
-    The logger gets 2 handlers a file handler and a steamhandler for
-    console output.
+    The logger outputs to two handlers a file handler and a
+    streamhandler for console output.
 
     Args:
         logFile (fileHandler): File to log output to
@@ -182,7 +182,7 @@ def main():
     provided list and backups with associated backup type.
 
     Raises:
-        MbackupError: When something goes wrong with a backup. Mbackup
+        MbackupError: When an error is raised during a backup, Mbackup
             will continue with the next backup.
 
     """
