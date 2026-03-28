@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mbackup"
+version = "trunk"
+description = "mbackup tool to create backups with rdiff-backup and rsync."
+readme = "README.rst"
+authors = [
+  { name = "Maarten Vandenryt", email = "vdrmrt@gmail.com" },
+]
+requires-python = ">=3.8"
+
+[tool.setuptools]
+packages = ["mbackuplib"]
+script-files = ["bin/mbackup.py"]

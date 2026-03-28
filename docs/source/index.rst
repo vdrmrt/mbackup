@@ -10,7 +10,8 @@ Welcome to mbackup's documentation!
 
 Command line usage:
 -------------------
-mbackup can be invoked from the command line. with the follwing options.
+mbackup can be invoked from the command line with the following
+options.
 ::
   mbackup [-h] [-d] [--debug] [-i] [--host HOST] [--user USER] [-l file]
     [--log LOG] [-m time] [-v] [--version] [-w]
@@ -36,9 +37,10 @@ mbackup can be invoked from the command line. with the follwing options.
 Structure:
 ----------
 
-The mbackup application consists of two parts the mbackup script that
-contains the cli interface and the mbacklib package. Mbackuplib is the
-interfact to the rdiff-backup and rsync programs.
+The mbackup application consists of two parts: the ``mbackup`` script,
+which contains the CLI interface, and the ``mbackuplib`` package.
+``mbackuplib`` provides the interface to the ``rdiff-backup`` and
+``rsync`` programs.
 
 .. toctree::
   :maxdepth: 2
