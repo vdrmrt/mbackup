@@ -14,4 +14,6 @@ requires-python = ">=3.8"
 
 [tool.setuptools]
 packages = ["mbackuplib"]
-script-files = ["bin/mbackup.py"]
+
+[project.scripts]
+mbackup = "mbackuplib.cli:main"
