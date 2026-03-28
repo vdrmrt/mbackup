@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'mbackup'
-copyright = '2015, Maarten Vandenryt'
+copyright = '2026, Maarten Vandenryt'
 author = 'Maarten Vandenryt'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -1,201 +1,144 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Welcome to mbackup’s documentation! &mdash; mbackup trunk documentation</title>
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to mbackup’s documentation! &mdash; mbackup 4.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
-  
-
-  
-
-  
-  
-    
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="mbackup trunk documentation" href="#"/>
-        <link rel="next" title="mbackup module" href="mbackup.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=3304f9e4"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mbackup module" href="mbackup.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
-
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
-          
+        <div class="wy-side-nav-search" >
 
           
-            <a href="#" class="icon icon-home"> mbackup
           
-
-          
+          <a href="#" class="icon icon-home">
+            mbackup
           </a>
-
-          
-            
-            
-              <div class="version">
-                trunk
-              </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-                <ul>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="mbackup.html">mbackup module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mbackuplib.html">mbackuplib package</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">mbackup</a>
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">mbackup</a>
       </nav>
 
-
-      
       <div class="wy-nav-content">
         <div class="rst-content">
-          
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>Welcome to mbackup&#8217;s documentation!</li>
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to mbackup’s documentation!</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/index.txt" rel="nofollow"> View page source</a>
-          
-        
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="welcome-to-mbackup-s-documentation">
-<h1>Welcome to mbackup&#8217;s documentation!<a class="headerlink" href="#welcome-to-mbackup-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>mbackup is python application to create  backups with rdiff-backup
-and / or rsync.</p>
-<div class="section" id="the-backup-list">
-<h2>The backup list:<a class="headerlink" href="#the-backup-list" title="Permalink to this headline">¶</a></h2>
-<p>The locations to backup or stored in a file.
-If no file is supplied to list directories to backup (option -l) mbackup
-will look for .mbackup-list in the users home directory. If run as root
-mbackup will look in /etc/mbackup-list.</p>
-<p>The file format used to list the directories to backup is one line per
-backup location. Each line contains two or three parameters separated
-with a white space (space or tab):</p>
+             
+  <section id="welcome-to-mbackup-s-documentation">
+<h1>Welcome to mbackup’s documentation!<a class="headerlink" href="#welcome-to-mbackup-s-documentation" title="Link to this heading"></a></h1>
+<p>mbackup is a Python application to create backups with <code class="docutils literal notranslate"><span class="pre">rdiff-backup</span></code>
+and/or <code class="docutils literal notranslate"><span class="pre">rsync</span></code>.</p>
+<section id="the-backup-list">
+<h2>The backup list:<a class="headerlink" href="#the-backup-list" title="Link to this heading"></a></h2>
+<p>The locations to back up are stored in a file. If no file is supplied
+with <code class="docutils literal notranslate"><span class="pre">-l</span></code>, mbackup looks for <code class="docutils literal notranslate"><span class="pre">~/.mbackup-list</span></code>. If run as root,
+mbackup looks in <code class="docutils literal notranslate"><span class="pre">/etc/mbackup-list</span></code>.</p>
+<p>The file format used to list the directories to back up is one line per
+backup location. Each line contains two or three parameters separated by
+whitespace:</p>
 <ul class="simple">
-<li>the directory to backup</li>
-<li>the type of backup, rdiff-backup or rsync</li>
-<li>the target directory, this paramater is optional. Relative paths will
-be apended to the global target path.</li>
+<li><p>the backup type, <code class="docutils literal notranslate"><span class="pre">rdiff-backup</span></code> or <code class="docutils literal notranslate"><span class="pre">rsync</span></code></p></li>
+<li><p>the directory to back up</p></li>
+<li><p>the target directory, which is optional. Relative paths are appended
+to the global target path.</p></li>
 </ul>
-<p>Lines starting with a # are ignored.
-Directories with whitespace need to be wrapped in double quotes.</p>
+<p>Lines starting with <code class="docutils literal notranslate"><span class="pre">#</span></code> are ignored. Directories with whitespace must
+be wrapped in double quotes.</p>
 <p>For example:</p>
-<dl class="docutils">
-<dt>::</dt>
-<dd># Backup list for mbackup
-# directory type[rdiff-backup | rsync] target
-/home/user/documents rdiff-backup /backups/documents
-/mnt/archive_1 rsync
-&#8220;/mnt/archive 2&#8221; rsync backups/archive</dd>
+<dl class="simple">
+<dt>::</dt><dd><p># Backup list for mbackup
+# type[rdiff-backup | rsync] directory target
+rdiff-backup /home/user/documents /backups/documents
+rsync /mnt/archive_1
+rsync “/mnt/archive 2” backups/archive</p>
+</dd>
 </dl>
-</div>
-<div class="section" id="the-log-file">
-<h2>The log file:<a class="headerlink" href="#the-log-file" title="Permalink to this headline">¶</a></h2>
-<p>mbackup logs its output to a file. If no log file is specified
-(&#8211;log option) mbackup will set /var/log/mbackup.log as the log file
-when run as root. When not executed as root ~/.mbackup.log is used as
-the log file.</p>
-</div>
-<div class="section" id="command-line-usage">
-<h2>Command line usage:<a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
-<p>mbackup can be invoked from the command line. with the follwing options.</p>
-<div class="highlight-python"><div class="highlight"><pre>mbackup [-h] [-d] [--debug] [-i] [--host HOST] [--user USER] [-l file]
-  [--log LOG] [-m time] [-v] [--version] [-w]
-  target-dir
+</section>
+<section id="the-log-file">
+<h2>The log file:<a class="headerlink" href="#the-log-file" title="Link to this heading"></a></h2>
+<p>mbackup logs its output to a file. If no log file is specified with
+<code class="docutils literal notranslate"><span class="pre">--log</span></code>, mbackup uses <code class="docutils literal notranslate"><span class="pre">/var/log/mbackup.log</span></code> when run as root.
+Otherwise it uses <code class="docutils literal notranslate"><span class="pre">~/.mbackup.log</span></code>.</p>
+</section>
+<section id="command-line-usage">
+<h2>Command line usage:<a class="headerlink" href="#command-line-usage" title="Link to this heading"></a></h2>
+<p>mbackup can be invoked from the command line with the following
+options.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mbackup</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">d</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span> <span class="n">HOST</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">user</span> <span class="n">USER</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">l</span> <span class="n">file</span><span class="p">]</span>
+  <span class="p">[</span><span class="o">--</span><span class="n">log</span> <span class="n">LOG</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">m</span> <span class="n">time</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">version</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">w</span><span class="p">]</span>
+  <span class="n">target</span><span class="o">-</span><span class="nb">dir</span>
 
-positional arguments:
-  target-dir   directory to store the backups
+<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="n">target</span><span class="o">-</span><span class="nb">dir</span>   <span class="n">directory</span> <span class="n">to</span> <span class="n">store</span> <span class="n">the</span> <span class="n">backups</span>
 
-optional arguments:
-  -h, --help   show this help message and exit
-  -d           do a dummy run
-  --debug      enable debugging output
-  -i           for rdiff-backup show previous increments
-  --host HOST  ssh host to backup to
-  --user USER  ssh user to login to backup host
-  -l file      file path of list of directories to backup
-  --log LOG    set log file
-  -m time      how long to keep increments for rdiff-backups
-  -v           enable verbose output
-  --version    show version and exit
-  -w           wait on user input to start the backup
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>   <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">-</span><span class="n">d</span>           <span class="n">do</span> <span class="n">a</span> <span class="n">dummy</span> <span class="n">run</span>
+  <span class="o">--</span><span class="n">debug</span>      <span class="n">enable</span> <span class="n">debugging</span> <span class="n">output</span>
+  <span class="o">-</span><span class="n">i</span>           <span class="k">for</span> <span class="n">rdiff</span><span class="o">-</span><span class="n">backup</span> <span class="n">show</span> <span class="n">previous</span> <span class="n">increments</span>
+  <span class="o">--</span><span class="n">host</span> <span class="n">HOST</span>  <span class="n">ssh</span> <span class="n">host</span> <span class="n">to</span> <span class="n">backup</span> <span class="n">to</span>
+  <span class="o">--</span><span class="n">user</span> <span class="n">USER</span>  <span class="n">ssh</span> <span class="n">user</span> <span class="n">to</span> <span class="n">login</span> <span class="n">to</span> <span class="n">backup</span> <span class="n">host</span>
+  <span class="o">-</span><span class="n">l</span> <span class="n">file</span>      <span class="n">file</span> <span class="n">path</span> <span class="n">of</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">directories</span> <span class="n">to</span> <span class="n">backup</span>
+  <span class="o">--</span><span class="n">log</span> <span class="n">LOG</span>    <span class="nb">set</span> <span class="n">log</span> <span class="n">file</span>
+  <span class="o">-</span><span class="n">m</span> <span class="n">time</span>      <span class="n">how</span> <span class="n">long</span> <span class="n">to</span> <span class="n">keep</span> <span class="n">increments</span> <span class="k">for</span> <span class="n">rdiff</span><span class="o">-</span><span class="n">backups</span>
+  <span class="o">-</span><span class="n">v</span>           <span class="n">enable</span> <span class="n">verbose</span> <span class="n">output</span>
+  <span class="o">--</span><span class="n">version</span>    <span class="n">show</span> <span class="n">version</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">-</span><span class="n">w</span>           <span class="n">wait</span> <span class="n">on</span> <span class="n">user</span> <span class="nb">input</span> <span class="n">to</span> <span class="n">start</span> <span class="n">the</span> <span class="n">backup</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="structure">
-<h2>Structure:<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
-<p>The mbackup application consists of two parts the mbackup script that
-contains the cli interface and the mbacklib package. Mbackuplib is the
-interfact to the rdiff-backup and rsync programs.</p>
+</section>
+<section id="structure">
+<h2>Structure:<a class="headerlink" href="#structure" title="Link to this heading"></a></h2>
+<p>The mbackup application consists of two parts: the <code class="docutils literal notranslate"><span class="pre">mbackup</span></code> script,
+which contains the CLI interface, and the <code class="docutils literal notranslate"><span class="pre">mbackuplib</span></code> package.
+<code class="docutils literal notranslate"><span class="pre">mbackuplib</span></code> provides the interface to the <code class="docutils literal notranslate"><span class="pre">rdiff-backup</span></code> and
+<code class="docutils literal notranslate"><span class="pre">rsync</span></code> programs.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mbackup.html">mbackup module</a></li>
@@ -210,81 +153,45 @@ interfact to the rdiff-backup and rsync programs.</p>
 </li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
            </div>
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="mbackup.html" class="btn btn-neutral float-right" title="mbackup module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mbackup.html" class="btn btn-neutral float-right" title="mbackup module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, Maarten Vandenryt.
-
-    </p>
+    <p>&#169; Copyright 2015, Maarten Vandenryt.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'trunk',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
