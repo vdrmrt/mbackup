@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mbackup"
-version = "trunk"
+version = "4.0.0"
 description = "mbackup tool to create backups with rdiff-backup and rsync."
 readme = "README.rst"
 authors = [
