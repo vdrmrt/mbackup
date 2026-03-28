@@ -15,14 +15,14 @@
 
 import sys
 import os
-import shlex
-import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0,os.path.abspath('../../bin'))
 sys.path.insert(0,os.path.abspath('../..'))
+
+from mbackuplib._version import __version__
 
 # -- General configuration ------------------------------------------------
 
@@ -62,15 +62,9 @@ author = 'Maarten Vandenryt'
 # built documents.
 #
 # The short X.Y version.
-
-def getVersion():
-    svnHeadUrl = '$HeadURL$'
-    return re.search('.*/(?:.*|tags|branches)/(.*|trunk)/docs/source/conf.py'
-                        ,svnHeadUrl).group(1)
-
-version = getVersion()
+version = __version__
 # The full version, including alpha/beta/rc tags.
-release = getVersion()
+release = __version__
 
 print('Version set to {v}'.format(v=version))
 

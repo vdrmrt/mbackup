@@ -1,6 +1,6 @@
 """ Package mbackuplib, no functionality implemented here."""
 
-__version__ = 'trunk'
+from ._version import __version__
 
 from .rdiffbackup import Rdiffbackup
 from .rsyncbackup import Rsyncbackup
