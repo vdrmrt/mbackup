@@ -14,5 +14,5 @@ venv/
 build/
 dist/
 
-# Sphinx build output
+# Legacy generated docs output
 docs/build/

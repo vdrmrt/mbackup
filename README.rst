@@ -119,14 +119,12 @@ Run the automated test suite with:
 Documentation
 -------------
 
-The project includes Sphinx documentation under ``docs/``.
+The project keeps documentation lightweight and GitHub-friendly:
 
-To build it locally:
-
-::
-
-  python3 -m pip install sphinx sphinx-rtd-theme
-  make -C docs html
+* ``README.rst`` is the main user-facing guide
+* ``docs/DEVELOPMENT.md`` covers local development workflow
+* ``docs/TROUBLESHOOTING.md`` covers operational issues such as
+  ``rdiff-backup`` version mismatches
 
 Project Layout
 --------------
@@ -134,5 +132,5 @@ Project Layout
 * ``mbackuplib/`` contains the package code
 * ``mbackuplib/cli.py`` contains the main CLI implementation
 * ``bin/mbackup.py`` is a compatibility wrapper for local execution
-* ``docs/source/`` contains the Sphinx source files
+* ``docs/`` contains lightweight Markdown documentation
 * ``tests/`` contains the automated tests
