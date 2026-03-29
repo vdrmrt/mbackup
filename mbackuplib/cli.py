@@ -5,6 +5,8 @@ import logging
 import logging.handlers
 import os
 import shlex
+import shutil
+import subprocess
 import sys
 
 import mbackuplib
@@ -148,11 +150,86 @@ def logDebugList(backupList):
         logger.debug('{s}'.format(s=s))
 
 
+def getBackupExecutable(backupType):
+    """Return the executable name for the selected backup type."""
+    executables = {
+        'rdiff-backup': 'rdiff-backup',
+        'rsync': 'rsync',
+    }
+    try:
+        return executables[backupType]
+    except KeyError as exc:
+        raise mbackuplib.MbackupError(
+            'Unknown backup type {t}'.format(t=backupType)
+        ) from exc
+
+
+def checkLocalExecutable(executable):
+    """Verify that the required local executable is available."""
+    if shutil.which(executable) is None:
+        raise mbackuplib.MbackupError(
+            'Required executable {e} was not found on this system'
+            .format(e=executable)
+        )
+
+
+def checkRemoteExecutable(host, user, executable):
+    """Verify that the required executable exists on the remote host."""
+    remote = host if not user else '{u}@{h}'.format(u=user, h=host)
+    command = [
+        'ssh',
+        remote,
+        'command -v {e} >/dev/null 2>&1'.format(e=shlex.quote(executable)),
+    ]
+    result = subprocess.run(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        details = result.stderr.strip() or result.stdout.strip()
+        if details:
+            raise mbackuplib.MbackupError(
+                'Required executable {e} was not found on remote host {h}: {d}'
+                .format(e=executable, h=remote, d=details)
+            )
+        raise mbackuplib.MbackupError(
+            'Required executable {e} was not found on remote host {h}'
+            .format(e=executable, h=remote)
+        )
+
+
+def runPreflightChecks(backupType, host=False, user=False,
+                       verifiedLocal=None, verifiedRemote=None):
+    """Verify backend executables before starting a backup job."""
+    executable = getBackupExecutable(backupType)
+    verifiedLocal = set() if verifiedLocal is None else verifiedLocal
+    verifiedRemote = set() if verifiedRemote is None else verifiedRemote
+
+    if executable not in verifiedLocal:
+        checkLocalExecutable(executable)
+        verifiedLocal.add(executable)
+
+    if host:
+        if 'ssh' not in verifiedLocal:
+            checkLocalExecutable('ssh')
+            verifiedLocal.add('ssh')
+
+        remoteKey = (host, user, executable)
+        if remoteKey not in verifiedRemote:
+            checkRemoteExecutable(host, user, executable)
+            verifiedRemote.add(remoteKey)
+
+
 def main():
     """Run the mbackup command-line interface."""
     args = parsArguments()
 
     logger = createLogger(args.log, args.debug)
+    verifiedLocal = set()
+    verifiedRemote = set()
 
     rdiffbackupVerbosityLevel = 5 if args.v else 3
 
@@ -180,6 +257,13 @@ def main():
                          .format(t=backupType))
             source = backupItem[1]
             logger.debug('Source set to: {b}'.format(b=backupItem[1]))
+            runPreflightChecks(
+                backupType,
+                host=args.host,
+                user=args.user,
+                verifiedLocal=verifiedLocal,
+                verifiedRemote=verifiedRemote,
+            )
 
             try:
                 target = backupItem[2]

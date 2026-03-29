@@ -2,10 +2,6 @@
 
 ## Priority 1
 
-- [ ] Add backend preflight checks
-  - Verify `rsync` and `rdiff-backup` exist before running jobs.
-  - For remote jobs, verify the remote executable is available too.
-
 - [ ] Improve failure diagnostics
   - Show local and remote `rdiff-backup` versions when relevant.
   - Detect version mismatches early.
@@ -70,3 +66,4 @@
 - [x] Stop tracking generated `docs/build/` output.
 - [x] Refresh the README for GitHub.
 - [x] Simplify the docs approach around the README and lightweight Markdown guides.
+- [x] Add backend preflight checks for local and remote executables.

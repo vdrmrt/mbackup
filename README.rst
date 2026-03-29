@@ -9,6 +9,7 @@ It is useful when you want one small tool to:
 * read a list of backup jobs from a file
 * send output to a rotating log file
 * run either ``rdiff-backup`` or ``rsync`` per job
+* verify required backup executables before a job starts
 * optionally target a remote host over SSH
 
 Requirements
@@ -96,6 +97,14 @@ You can target a remote host over SSH with ``--host`` and ``--user``:
 ::
 
   mbackup --host backup.example.com --user alice -l ~/.mbackup-list /backups
+
+Before a remote job starts, mbackup verifies:
+
+* local ``ssh`` is available
+* the selected backend executable exists on the remote host
+
+Before any job starts, mbackup also verifies the required local backend
+executable is installed.
 
 Logging
 -------
