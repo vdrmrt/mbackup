@@ -1,7 +1,7 @@
-mbackup module
-==============
+CLI Module
+==========
 
-.. automodule:: mbackup
+.. automodule:: mbackuplib.cli
     :members:
     :undoc-members:
     :show-inheritance:

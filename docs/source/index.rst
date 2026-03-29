@@ -10,8 +10,8 @@ Welcome to mbackup's documentation!
 
 Command line usage:
 -------------------
-mbackup can be invoked from the command line with the following
-options.
+The installed ``mbackup`` command can be invoked from the command line
+with the following options.
 ::
   mbackup [-h] [-d] [--debug] [-i] [--host HOST] [--user USER] [-l file]
     [--log LOG] [-m time] [-v] [--version] [-w]
@@ -37,10 +37,10 @@ options.
 Structure:
 ----------
 
-The mbackup application consists of two parts: the ``mbackup`` script,
-which contains the CLI interface, and the ``mbackuplib`` package.
-``mbackuplib`` provides the interface to the ``rdiff-backup`` and
-``rsync`` programs.
+The mbackup application consists of the ``mbackuplib`` package, which
+contains both the CLI implementation and the interfaces to the
+``rdiff-backup`` and ``rsync`` programs. The ``bin/mbackup.py`` script
+remains as a compatibility wrapper for local execution.
 
 .. toctree::
   :maxdepth: 2
