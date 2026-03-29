@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "mbackup"
 dynamic = ["version"]
 description = "mbackup tool to create backups with rdiff-backup and rsync."
-readme = "README.rst"
+readme = "README.md"
 authors = [
   { name = "Maarten Vandenryt", email = "vdrmrt@gmail.com" },
 ]

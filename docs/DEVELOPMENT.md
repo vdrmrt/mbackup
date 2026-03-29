@@ -38,7 +38,7 @@ mbackup
 
 This project intentionally keeps documentation lightweight:
 
-* `README.rst` is the main user-facing guide
+* `README.md` is the main user-facing guide
 * `docs/` contains additional Markdown notes for development and troubleshooting
 
 There is no longer a Sphinx build step or generated docs site in the repository.
